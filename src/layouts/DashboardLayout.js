@@ -1,5 +1,5 @@
 // DashboardLayout.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import {
@@ -42,14 +42,53 @@ export default function DashboardLayout() {
     }
   }, [isMobile]);
 
-  const activePage = (() => {
-    const path = location.pathname;
-    if (path.startsWith("/dashboard/campaigns")) return "Campaigns";
-    if (path.startsWith("/dashboard/settings")) return "Settings";
-    if (path.startsWith("/profile-page")) return "Profile";
-    if (path.startsWith("/dashboard")) return "Dashboard";
-    return "";
-  })();
+  const navItems = useMemo(() => [
+    {
+      text: "Dashboard",
+      icon: "Dashboard",
+      path: "/dashboard",
+    },
+    {
+      text: "Plan List",
+      icon: "BallotIcon",
+      path: "/dashboard/plan-list",
+    },
+    {
+      text: "Campaign List",
+      icon: "Campaigns",
+      path: "/dashboard/campaign-list",
+    },
+    {
+      text: "Advertisers",
+      icon: "Advertisers",
+      path: "/dashboard/advertisers",
+    },
+  ], []);
+
+  const nonSidebarPages = [
+    { path: "/profile-page", text: "Profile" },
+    { path: "/dashboard/settings", text: "Settings" },
+  ];
+
+  const activePage = useMemo(() => {
+    const currentPath = location.pathname;
+    
+    // Combine all possible routes
+    const allRoutes = [
+      ...nonSidebarPages,
+      ...navItems.map(item => ({ 
+        path: item.path, 
+        text: item.text 
+      }))
+    ];
+
+    // Find the best matching route (longest path match)
+    const matchedRoute = allRoutes
+      .filter(route => currentPath.startsWith(route.path))
+      .sort((a, b) => b.path.length - a.path.length)[0];
+
+    return matchedRoute ? matchedRoute.text : '';
+  }, [location.pathname, navItems]);
 
   const toggleDrawer = () => {
     if (isMobile) setOpen((o) => !o);
@@ -77,30 +116,6 @@ export default function DashboardLayout() {
     navigate(-1);
   };
 
-  const navItems = [
-    {
-      text: "Dashboard",
-      icon: "Dashboard", // Changed to string identifier
-      path: "/dashboard",
-    },
-    {
-      text: "Plan List",
-      icon: "BallotIcon", // Changed to string identifier
-      path: "/dashboard/plan-list",
-    },
-    {
-      text: "Campaign List",
-      icon: "People", // Changed to string identifier
-      path: "dashboard/campaign-list",
-    },
-    {
-      text: "Advertisers",
-      icon: "People", // Changed to string identifier
-      path: "dashboard/advertisers",
-    },
-  ];
-
-
   return (
     <Box
       sx={{
@@ -108,8 +123,8 @@ export default function DashboardLayout() {
         minHeight: "100vh",
         width: "100vw",
         background: BG_GRADIENT,
-        overflowX: "hidden", // Prevent horizontal scroll
-        overflowY: "hidden", // Prevent root scroll
+        overflowX: "hidden",
+        overflowY: "hidden",
         maxWidth: "100vw",
         boxSizing: "border-box",
       }}
@@ -163,7 +178,7 @@ export default function DashboardLayout() {
             flex: 1,
             minHeight: 0,
             overflowX: "hidden",
-            overflowY: "auto", // Only vertical scroll here
+            overflowY: "auto",
             position: "relative",
             p: 3,
             mt: 7,

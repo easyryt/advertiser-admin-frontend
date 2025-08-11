@@ -6,16 +6,12 @@ import {
   IconButton,
   Typography,
   Box,
-  Button,
   Avatar,
-  Badge,
   styled,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import MenuIcon from "@mui/icons-material/Menu";
-import axios from "axios";
 import dp from "./dp.gif"
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
@@ -37,28 +33,7 @@ export default function TopBar({
 }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [nameValue, setNameValue] = useState('');
 
-    const fetchProfile = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const response = await axios.get('https://advertiserappnew.onrender.com/adv/auth/profile', { withCredentials: true });
-        setNameValue(response.data.message?.name || '');
-      } catch (err) {
-        setError(err?.response?.data?.message || err.message || 'Failed to fetch profile');
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    useEffect(() => {
-      fetchProfile();
-      // eslint-disable-next-line
-    }, []);
 
   return (
     <StyledAppBar position="fixed">
@@ -111,14 +86,14 @@ export default function TopBar({
                   display: { xs: "none", sm: "block" },
                 }}
               >
-                Hi, {nameValue || "Advertiser"}
+                Hi, Admin
               </Typography>
             )}
 
             <IconButton onClick={handleMenuOpen} size="small">
               <Avatar
                 src={dp}
-                alt={nameValue ? nameValue : "Advertiser"}
+                alt={ "Admin"}
                 sx={{
                   width: { xs: 28, sm: 32 },
                   height: { xs: 28, sm: 32 },

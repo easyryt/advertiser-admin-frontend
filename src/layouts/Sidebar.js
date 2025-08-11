@@ -1,3 +1,4 @@
+// Sidebar.js
 import React, { useState, useEffect } from "react";
 import {
   Drawer,
@@ -136,8 +137,8 @@ const iconComponents = {
   Settings: Settings,
   Inventory: Inventory,
   Messages: MessagesIcon,
-  Campaigns: CampaignsIcon, // Add missing icon
-  Advertisers: GroupsIcon, // Add missing icon
+  Campaigns: CampaignsIcon,
+  Advertisers: GroupsIcon,
 };
 
 export default function Sidebar({

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
-  useNavigate,
-  useParams
+  useNavigate
 } from 'react-router-dom';
 import {
   DataGrid,
@@ -18,21 +17,10 @@ import {
   LinearProgress,
   useTheme,
   useMediaQuery,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  IconButton,
   Chip,
-  Stack,
-  Divider,
   Avatar
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import CloseIcon from '@mui/icons-material/Close';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EventIcon from '@mui/icons-material/Event';
 import UpdateIcon from '@mui/icons-material/Update';
@@ -75,6 +63,10 @@ const premiumTheme = createTheme({
       fontWeight: 700,
       letterSpacing: '-0.5px',
     },
+    subtitle1: {
+      fontWeight: 600,
+      letterSpacing: '-0.25px',
+    },
   },
   components: {
     MuiPaper: {
@@ -93,6 +85,11 @@ const premiumTheme = createTheme({
           fontWeight: 600,
           borderRadius: '12px',
           padding: '8px 20px',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+          }
         },
       },
     },
@@ -102,35 +99,78 @@ const premiumTheme = createTheme({
           fontWeight: 600,
           fontSize: '0.8rem',
           padding: '4px 8px',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
         },
       },
     },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        }
+      }
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(0, 0, 0, 0.08)',
+        }
+      }
+    },
+    MuiDataGrid: {
+      styleOverrides: {
+        cell: {
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        columnHeaderTitleContainer: {
+          justifyContent: 'center',
+          width: '100%',
+        },
+      }
+    }
   },
 });
 
 // Custom toolbar with premium buttons
 function CustomToolbar() {
   return (
-    <GridToolbarContainer sx={{ p: 2, justifyContent: 'space-between', bgcolor: 'rgba(99, 102, 241, 0.05)' }}>
+    <GridToolbarContainer sx={{ 
+      p: 2, 
+      justifyContent: 'space-between', 
+      bgcolor: 'rgba(99, 102, 241, 0.05)',
+      borderTopLeftRadius: '16px',
+      borderTopRightRadius: '16px',
+    }}>
       <Box>
         <GridToolbarFilterButton 
           sx={{ 
             color: '#6366f1', 
-            '&:hover': { backgroundColor: 'rgba(99, 102, 241, 0.08)' } 
+            '&:hover': { 
+              backgroundColor: 'rgba(99, 102, 241, 0.08)',
+              boxShadow: '0 2px 6px rgba(99, 102, 241, 0.2)'
+            } 
           }} 
         />
         <GridToolbarDensitySelector 
           sx={{ 
             color: '#6366f1', 
             ml: 1,
-            '&:hover': { backgroundColor: 'rgba(99, 102, 241, 0.08)' } 
+            '&:hover': { 
+              backgroundColor: 'rgba(99, 102, 241, 0.08)',
+              boxShadow: '0 2px 6px rgba(99, 102, 241, 0.2)'
+            } 
           }} 
         />
       </Box>
       <GridToolbarExport 
         sx={{ 
           color: '#6366f1', 
-          '&:hover': { backgroundColor: 'rgba(99, 102, 241, 0.08)' } 
+          '&:hover': { 
+            backgroundColor: 'rgba(99, 102, 241, 0.08)',
+            boxShadow: '0 2px 6px rgba(99, 102, 241, 0.2)'
+          } 
         }} 
       />
     </GridToolbarContainer>
@@ -139,8 +179,6 @@ function CustomToolbar() {
 
 export default function AdvertisersDataGrid() {
   const [data, setData] = useState([]);
-  const [selectedAdvertiser, setSelectedAdvertiser] = useState(null);
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -150,7 +188,6 @@ export default function AdvertisersDataGrid() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
-  const { advertiserId } = useParams();
 
   const fetchData = async () => {
     setLoading(true);
@@ -169,15 +206,6 @@ export default function AdvertisersDataGrid() {
       if (response.data.status) {
         setData(response.data.message);
         setRowCount(response.data.total);
-        
-        // If URL has advertiserId, open detail view
-        if (advertiserId) {
-          const advertiser = response.data.message.find(item => item._id === advertiserId);
-          if (advertiser) {
-            setSelectedAdvertiser(advertiser);
-            setDetailDialogOpen(true);
-          }
-        }
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -188,17 +216,10 @@ export default function AdvertisersDataGrid() {
 
   useEffect(() => {
     fetchData();
-  }, [paginationModel, advertiserId]);
+  }, [paginationModel]);
 
   const handleRowClick = (params) => {
-    navigate(`/dashboard/advertiser-analytics-/${params.id}`);
-    setSelectedAdvertiser(params.row);
-    setDetailDialogOpen(true);
-  };
-
-  const handleCloseDetail = () => {
-    navigate('/dashboard/advertiser-analytics');
-    setDetailDialogOpen(false);
+    navigate(`/dashboard/advertiser-analytics/${params.id}`);
   };
 
   const columns = [
@@ -210,18 +231,13 @@ export default function AdvertisersDataGrid() {
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar sx={{ 
-            bgcolor: '#e0e7ff', 
-            color: '#6366f1', 
-            mr: 2,
-            width: 36,
-            height: 36,
-            fontSize: '1rem'
-          }}>
-            {params.row.name ? params.row.name.charAt(0) : 'A'}
-          </Avatar>
-          <Typography variant="body2" fontWeight="500">
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Typography variant="body2" fontWeight="600" sx={{ textAlign: 'center' }}>
             {params.value || 'N/A'}
           </Typography>
         </Box>
@@ -235,8 +251,11 @@ export default function AdvertisersDataGrid() {
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => (
-        <Typography variant="body2" color="#4b5563" sx={{ textAlign: 'center' }}>
-          {params.value}
+        <Typography variant="body2" fontWeight="500" color="#4b5563" sx={{ 
+          textAlign: 'center',
+          width: '100%'
+        }}>
+          {params.value || 'N/A'}
         </Typography>
       )
     },
@@ -248,23 +267,23 @@ export default function AdvertisersDataGrid() {
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => (
-        <Box
-          sx={{
-            bgcolor: params.value === 'Advertiser' 
-              ? 'rgba(99, 102, 241, 0.1)' 
-              : 'rgba(16, 185, 129, 0.1)',
-            color: params.value === 'Advertiser' 
-              ? '#6366f1' 
-              : '#10b981',
-            px: 1.5,
-            py: 0.5,
-            borderRadius: 4,
-            fontSize: '0.75rem',
-            fontWeight: 'bold',
-            display: 'inline-flex',
-          }}
-        >
-          {params.value}
+        <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+          <Chip
+            label={params.value}
+            sx={{ 
+              bgcolor: params.value === 'Advertiser' 
+                ? 'rgba(99, 102, 241, 0.1)' 
+                : 'rgba(16, 185, 129, 0.1)',
+              color: params.value === 'Advertiser' 
+                ? '#6366f1' 
+                : '#10b981',
+              fontWeight: 'bold',
+              fontSize: '0.75rem',
+              px: 1.5,
+              py: 1,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.08)'
+            }} 
+          />
         </Box>
       )
     },
@@ -283,11 +302,15 @@ export default function AdvertisersDataGrid() {
           py: 0.5,
           borderRadius: 4,
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 2px 6px rgba(16, 185, 129, 0.15)',
+          width: 'fit-content',
+          margin: '0 auto'
         }}>
           <MonetizationOnIcon sx={{ 
             color: '#10b981', 
-            fontSize: '1rem', 
+            fontSize: '1.2rem', 
             mr: 1 
           }}/>
           <Typography variant="body2" fontWeight="700" color="#10b981">
@@ -307,10 +330,12 @@ export default function AdvertisersDataGrid() {
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center',
+          justifyContent: 'center',
           color: '#64748b',
-          fontSize: '0.875rem'
+          fontSize: '0.875rem',
+          width: '100%'
         }}>
-          <EventIcon sx={{ fontSize: '1rem', mr: 1 }}/>
+          <EventIcon sx={{ fontSize: '1.2rem', mr: 1, color: '#6366f1' }}/>
           {new Date(params.value).toLocaleDateString()}
         </Box>
       ),
@@ -326,10 +351,12 @@ export default function AdvertisersDataGrid() {
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center',
+          justifyContent: 'center',
           color: '#64748b',
-          fontSize: '0.875rem'
+          fontSize: '0.875rem',
+          width: '100%'
         }}>
-          <UpdateIcon sx={{ fontSize: '1rem', mr: 1 }}/>
+          <UpdateIcon sx={{ fontSize: '1.2rem', mr: 1, color: '#6366f1' }}/>
           {new Date(params.value).toLocaleDateString()}
         </Box>
       ),
@@ -346,21 +373,34 @@ export default function AdvertisersDataGrid() {
           borderRadius: 3,
           overflow: 'hidden',
           p: isMobile ? 1 : 3,
+          boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
         }}
       >
         <Box sx={{ 
-          mb: 3, 
+          mb: 4, 
           textAlign: 'center',
-          background: 'linear-gradient(45deg, #6366f1 0%, #8b5cf6 100%)',
-          p: 3,
+          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+          p: 4,
           borderRadius: '16px',
           color: 'white',
-          boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)'
+          boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)',
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: '-50%',
+            right: '-50%',
+            width: '200%',
+            height: '200%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%)',
+            transform: 'rotate(30deg)'
+          }
         }}>
-          <Typography variant="h4" fontWeight="800" letterSpacing="-0.5px">
+          <Typography variant="h4" fontWeight="800" letterSpacing="-0.5px" sx={{ position: 'relative', zIndex: 1 }}>
             Advertisers Dashboard
           </Typography>
-          <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
+          <Typography variant="body1" sx={{ opacity: 0.9, mt: 1, position: 'relative', zIndex: 1 }}>
             Premium analytics with real-time insights
           </Typography>
         </Box>
@@ -370,15 +410,30 @@ export default function AdvertisersDataGrid() {
           width: '100%',
           '& .MuiDataGrid-root': {
             border: 'none',
-            fontSize: '0.875rem'
+            fontSize: '0.875rem',
+            borderRadius: '16px',
+            overflow: 'hidden',
           },
           '& .MuiDataGrid-columnHeaders': {
             bgcolor: 'rgba(99, 102, 241, 0.05)',
-            borderRadius: '12px 12px 0 0',
+            borderRadius: '16px 16px 0 0',
           },
           '& .MuiDataGrid-cell': {
             borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+            padding: '0 16px',
           },
+          '& .MuiDataGrid-footerContainer': {
+            borderTop: '1px solid rgba(0, 0, 0, 0.05)',
+            borderBottomLeftRadius: '16px',
+            borderBottomRightRadius: '16px',
+          },
+          '& .MuiDataGrid-virtualScroller': {
+            backgroundColor: '#ffffff',
+          },
+          '& .MuiDataGrid-columnHeaderTitle': {
+            fontWeight: 700,
+            fontSize: '0.9rem',
+          }
         }}>
           <DataGrid
             rows={data}
@@ -401,6 +456,9 @@ export default function AdvertisersDataGrid() {
               },
             }}
             sx={{
+              '& .MuiDataGrid-row': {
+                transition: 'background-color 0.2s ease',
+              },
               '& .MuiDataGrid-row:hover': {
                 bgcolor: 'rgba(99, 102, 241, 0.03)',
                 cursor: 'pointer',
@@ -419,220 +477,51 @@ export default function AdvertisersDataGrid() {
         </Box>
         
         <Box sx={{ 
-          mt: 2, 
+          mt: 3, 
           display: 'flex', 
           justifyContent: 'space-between',
+          alignItems: 'center',
           color: 'text.secondary',
-          fontSize: '0.8rem',
-          px: 1
+          fontSize: '0.85rem',
+          px: 1,
+          py: 1.5,
+          borderRadius: '12px',
+          bgcolor: 'rgba(99, 102, 241, 0.03)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
         }}>
           <Typography sx={{ 
             display: 'flex', 
             alignItems: 'center',
-            gap: 1
+            gap: 1,
+            fontWeight: 500
           }}>
             <Box sx={{
               width: '12px',
               height: '12px',
               bgcolor: '#6366f1',
-              borderRadius: '4px'
+              borderRadius: '4px',
+              boxShadow: '0 2px 4px rgba(99, 102, 241, 0.5)'
             }}/>
-            Total Advertisers: {rowCount}
+            Total Advertisers: <Box component="span" fontWeight="700" color="#6366f1">{rowCount}</Box>
           </Typography>
           <Typography sx={{ 
             display: 'flex', 
             alignItems: 'center',
-            gap: 1
+            gap: 1,
+            fontWeight: 500
           }}>
             <Box sx={{
               width: '12px',
               height: '12px',
               bgcolor: '#10b981',
-              borderRadius: '4px'
+              borderRadius: '4px',
+              boxShadow: '0 2px 4px rgba(16, 185, 129, 0.5)'
             }}/>
-            Page {paginationModel.page + 1} of {Math.ceil(rowCount / paginationModel.pageSize)}
+            Page <Box component="span" fontWeight="700" color="#6366f1">{paginationModel.page + 1}</Box> 
+            of <Box component="span" fontWeight="700" color="#10b981">{Math.ceil(rowCount / paginationModel.pageSize)}</Box>
           </Typography>
         </Box>
-        
-        {/* Premium Advertiser Detail Dialog */}
-        <Dialog
-          open={detailDialogOpen}
-          onClose={handleCloseDetail}
-          fullWidth
-          maxWidth="sm"
-          PaperProps={{
-            sx: {
-              borderRadius: '16px',
-              overflow: 'hidden',
-              background: 'linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%)',
-            }
-          }}
-        >
-          <Box sx={{ 
-            bgcolor: 'primary.main',
-            p: 3,
-            color: 'white',
-            position: 'relative'
-          }}>
-            <DialogTitle sx={{ 
-              m: 0, 
-              p: 0,
-              color: 'white',
-              fontSize: '1.5rem',
-              fontWeight: 700
-            }}>
-              Advertiser Profile
-            </DialogTitle>
-            <IconButton
-              aria-label="close"
-              onClick={handleCloseDetail}
-              sx={{
-                position: 'absolute',
-                right: 16,
-                top: 16,
-                color: 'white',
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          
-          <DialogContent dividers sx={{ py: 4 }}>
-            {selectedAdvertiser && (
-              <Stack spacing={3}>
-                <Box sx={{ 
-                  textAlign: 'center', 
-                  mb: 2,
-                  position: 'relative',
-                  mt: -8
-                }}>
-                  <Avatar 
-                    src="" 
-                    sx={{ 
-                      width: 96, 
-                      height: 96, 
-                      mx: 'auto',
-                      border: '4px solid white',
-                      bgcolor: '#e0e7ff',
-                      color: '#6366f1',
-                      fontSize: '2.5rem',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                    }}
-                  >
-                    {selectedAdvertiser.name ? selectedAdvertiser.name.charAt(0) : 'A'}
-                  </Avatar>
-                  <Typography variant="h5" fontWeight="700" sx={{ mt: 2 }}>
-                    {selectedAdvertiser.name || 'N/A'}
-                  </Typography>
-                  <Chip 
-                    label={selectedAdvertiser.role} 
-                    sx={{ 
-                      bgcolor: selectedAdvertiser.role === 'Advertiser' 
-                        ? 'rgba(99, 102, 241, 0.1)' 
-                        : 'rgba(16, 185, 129, 0.1)',
-                      color: selectedAdvertiser.role === 'Advertiser' 
-                        ? '#6366f1' 
-                        : '#10b981',
-                      fontWeight: 'bold',
-                      fontSize: '0.9rem',
-                      px: 2,
-                      py: 1,
-                      mt: 1
-                    }} 
-                  />
-                </Box>
-                
-                <Divider />
-                
-                <Box sx={{ 
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: 3,
-                  mt: 2
-                }}>
-                  <DetailItem 
-                    icon={<AccountCircleIcon sx={{ color: '#64748b' }}/>}
-                    label="Phone"
-                    value={selectedAdvertiser.phone}
-                  />
-                  
-                  <DetailItem 
-                    icon={<MonetizationOnIcon sx={{ color: '#10b981' }}/>}
-                    label="Wallet Balance"
-                    value={`₹${selectedAdvertiser.wallet.toLocaleString()}`}
-                    valueColor="#10b981"
-                  />
-                  
-                  <DetailItem 
-                    icon={<EventIcon sx={{ color: '#64748b' }}/>}
-                    label="Account Created"
-                    value={new Date(selectedAdvertiser.createdAt).toLocaleDateString()}
-                  />
-                  
-                  <DetailItem 
-                    icon={<UpdateIcon sx={{ color: '#64748b' }}/>}
-                    label="Last Updated"
-                    value={new Date(selectedAdvertiser.updatedAt).toLocaleDateString()}
-                  />
-                </Box>
-                
-                <Divider sx={{ mt: 1 }}/>
-                
-                <Box sx={{ 
-                  bgcolor: 'rgba(99, 102, 241, 0.03)',
-                  borderRadius: '12px',
-                  p: 2,
-                  textAlign: 'center'
-                }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Advertiser ID
-                  </Typography>
-                  <Typography variant="body2" sx={{ 
-                    fontFamily: 'monospace', 
-                    wordBreak: 'break-all',
-                    color: '#6366f1'
-                  }}>
-                    {selectedAdvertiser._id}
-                  </Typography>
-                </Box>
-              </Stack>
-            )}
-          </DialogContent>
-          <DialogActions sx={{ 
-            px: 3, 
-            py: 2,
-            bgcolor: 'background.paper'
-          }}>
-            <Button 
-              onClick={handleCloseDetail} 
-              variant="contained"
-              sx={{ 
-                bgcolor: 'primary.main',
-                '&:hover': { bgcolor: 'primary.dark' }
-              }}
-            >
-              Close Profile
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Paper>
     </ThemeProvider>
-  );
-}
-
-// Reusable detail item component
-function DetailItem({ icon, label, value, valueColor = '#1e293b' }) {
-  return (
-    <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-        {icon}
-        <Typography variant="body2" color="textSecondary" sx={{ ml: 1 }}>
-          {label}
-        </Typography>
-      </Box>
-      <Typography variant="body1" fontWeight="500" sx={{ color: valueColor }}>
-        {value}
-      </Typography>
-    </Box>
   );
 }
