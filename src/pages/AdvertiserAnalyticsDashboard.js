@@ -52,6 +52,7 @@ import {
   Campaign,
 } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useParams } from "react-router-dom";
 
 // Light theme with white background
 const theme = createTheme({
@@ -267,7 +268,7 @@ const AdvertiserAnalyticsDashboard = () => {
     sortBy: "budgetUtilization",
     sortOrder: "asc",
   });
-  const [advertiserId, setAdvertiserId] = useState("6890bb2caf109e2aa1b78071");
+  const {advertiserId} = useParams()
 
   const fetchData = async () => {
     setLoading(true);
@@ -521,22 +522,6 @@ const AdvertiserAnalyticsDashboard = () => {
               >
                 Refresh Data
               </Button>
-              <TextField
-                label="Advertiser ID"
-                value={advertiserId}
-                onChange={(e) => setAdvertiserId(e.target.value)}
-                size="small"
-                sx={{ width: 300 }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={fetchData} disabled={loading}>
-                        <Cached />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
             </Box>
           </Box>
 
