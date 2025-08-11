@@ -229,6 +229,12 @@ const PlanList = () => {
 
   const handleFormChange = (e) => {
     const { name, value } = e?.target ?? {};
+    
+    // Prevent negative numbers for amount fields
+    if ((name === "planAmount" || name === "installs" || name === "reviews") && value < 0) {
+      return;
+    }
+    
     setFormData({
       ...formData,
       [name]: value,
@@ -517,7 +523,7 @@ const PlanList = () => {
                   color: theme.palette.success.dark,
                 }}
               >
-                ${params?.value?.toLocaleString()}
+                ₹{params?.value?.toLocaleString()}
               </Typography>
             </Box>
           ) : (
@@ -675,6 +681,7 @@ const PlanList = () => {
           {snackbar?.message}
         </Alert>
       </Snackbar>
+
       {/* Header with Create Button */}
       <Box
         sx={{
@@ -952,7 +959,7 @@ const PlanList = () => {
               </Box>
             </Box>
             <Typography variant="h4" fontWeight={800}>
-              $
+              ₹
               {plans.length > 0
                 ? Math.round(
                     plans.reduce((acc, plan) => acc + plan.planAmount, 0) /
@@ -1174,7 +1181,7 @@ const PlanList = () => {
             />
 
             <TextField
-              label="Amount ($)"
+              label="Amount (₹)"
               name="planAmount"
               value={formData?.planAmount}
               onChange={handleFormChange}
@@ -1184,17 +1191,8 @@ const PlanList = () => {
               type="number"
               error={formErrors?.planAmount}
               helperText={
-                formErrors?.planAmount ? "Valid amount is required" : ""
+                formErrors?.planAmount ? "Positive amount is required" : ""
               }
-              sx={{
-                "& .MuiInputBase-root": {
-                  borderRadius: "12px",
-                  border: "1px solid rgba(0, 0, 0, 0.1)",
-                },
-                "& label": {
-                  color: theme.palette.text.primary,
-                },
-              }}
               InputProps={{
                 startAdornment: (
                   <MonetizationOnIcon
@@ -1204,6 +1202,19 @@ const PlanList = () => {
                     }}
                   />
                 ),
+                inputProps: { 
+                  min: 0.01,
+                  step: "any"
+                }
+              }}
+              sx={{
+                "& .MuiInputBase-root": {
+                  borderRadius: "12px",
+                  border: "1px solid rgba(0, 0, 0, 0.1)",
+                },
+                "& label": {
+                  color: theme.palette.text.primary,
+                },
               }}
             />
 
@@ -1219,8 +1230,14 @@ const PlanList = () => {
                 type="number"
                 error={formErrors?.installs}
                 helperText={
-                  formErrors?.installs ? "Valid install count is required" : ""
+                  formErrors?.installs ? "Positive integer is required" : ""
                 }
+                InputProps={{
+                  inputProps: { 
+                    min: 1,
+                    step: 1
+                  }
+                }}
                 sx={{
                   "& .MuiInputBase-root": {
                     borderRadius: "12px",
@@ -1243,8 +1260,14 @@ const PlanList = () => {
                 type="number"
                 error={formErrors?.reviews}
                 helperText={
-                  formErrors?.reviews ? "Valid review count is required" : ""
+                  formErrors?.reviews ? "Positive integer is required" : ""
                 }
+                InputProps={{
+                  inputProps: { 
+                    min: 1,
+                    step: 1
+                  }
+                }}
                 sx={{
                   "& .MuiInputBase-root": {
                     borderRadius: "12px",
@@ -1370,7 +1393,7 @@ const PlanList = () => {
               />
 
               <TextField
-                label="Amount ($)"
+                label="Amount (₹)"
                 name="planAmount"
                 value={formData?.planAmount}
                 onChange={handleFormChange}
@@ -1380,17 +1403,8 @@ const PlanList = () => {
                 type="number"
                 error={formErrors?.planAmount}
                 helperText={
-                  formErrors?.planAmount ? "Valid amount is required" : ""
+                  formErrors?.planAmount ? "Positive amount is required" : ""
                 }
-                sx={{
-                  "& .MuiInputBase-root": {
-                    borderRadius: "12px",
-                    border: "1px solid rgba(0, 0, 0, 0.1)",
-                  },
-                  "& label": {
-                    color: theme.palette.text.primary,
-                  },
-                }}
                 InputProps={{
                   startAdornment: (
                     <MonetizationOnIcon
@@ -1400,6 +1414,19 @@ const PlanList = () => {
                       }}
                     />
                   ),
+                  inputProps: { 
+                    min: 0.01,
+                    step: "any"
+                  }
+                }}
+                sx={{
+                  "& .MuiInputBase-root": {
+                    borderRadius: "12px",
+                    border: "1px solid rgba(0, 0, 0, 0.1)",
+                  },
+                  "& label": {
+                    color: theme.palette.text.primary,
+                  },
                 }}
               />
 
@@ -1416,9 +1443,15 @@ const PlanList = () => {
                   error={formErrors?.installs}
                   helperText={
                     formErrors?.installs
-                      ? "Valid install count is required"
+                      ? "Positive integer is required"
                       : ""
                   }
+                  InputProps={{
+                    inputProps: { 
+                      min: 1,
+                      step: 1
+                    }
+                  }}
                   sx={{
                     "& .MuiInputBase-root": {
                       borderRadius: "12px",
@@ -1441,8 +1474,14 @@ const PlanList = () => {
                   type="number"
                   error={formErrors?.reviews}
                   helperText={
-                    formErrors?.reviews ? "Valid review count is required" : ""
+                    formErrors?.reviews ? "Positive integer is required" : ""
                   }
+                  InputProps={{
+                    inputProps: { 
+                      min: 1,
+                      step: 1
+                    }
+                  }}
                   sx={{
                     "& .MuiInputBase-root": {
                       borderRadius: "12px",
@@ -1557,7 +1596,7 @@ const PlanList = () => {
                 Amount:
               </Typography>
               <Typography variant="body2" fontWeight={600} color={theme.palette.text.primary}>
-                ${selectedPlan?.planAmount?.toLocaleString?.()}
+                ₹{selectedPlan?.planAmount?.toLocaleString?.()}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
