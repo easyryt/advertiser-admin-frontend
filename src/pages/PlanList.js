@@ -23,6 +23,7 @@ import {
   Divider,
   Tooltip,
   IconButton,
+  Grid,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { motion } from "framer-motion";
@@ -32,7 +33,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import InfoIcon from "@mui/icons-material/Info";
-import { styled } from "@mui/material/styles";
+import { styled, alpha } from "@mui/material/styles";
 
 // Premium styled components
 const PremiumButton = styled(Button)(({ theme }) => ({
@@ -42,6 +43,7 @@ const PremiumButton = styled(Button)(({ theme }) => ({
   padding: "10px 24px",
   boxShadow: theme.shadows[3],
   background: `linear-gradient(45deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+  color: theme.palette.common.white,
   transition: "all 0.3s ease",
   "&:hover": {
     boxShadow: theme.shadows[8],
@@ -57,16 +59,21 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     display: "flex",
     alignItems: "center",
     padding: "0 16px",
+    color: theme.palette.text.primary,
   },
   "& .MuiDataGrid-columnHeader": {
-    backgroundColor: theme.palette.grey[50],
+    backgroundColor: alpha(theme.palette.primary.light, 0.1),
     fontWeight: 700,
     fontSize: "0.9rem",
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.primary,
     padding: "0 16px",
+    "&:focus-within": {
+      outline: "none",
+    },
   },
   "& .MuiDataGrid-columnHeaderTitle": {
     fontWeight: 700,
+    color: theme.palette.text.primary,
   },
   "& .MuiDataGrid-footerContainer": {
     borderTop: `1px solid ${theme.palette.divider}`,
@@ -79,7 +86,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   "& .MuiDataGrid-row": {
     transition: "background-color 0.2s",
     "&:hover": {
-      backgroundColor: theme.palette.action.hover,
+      backgroundColor: alpha(theme.palette.primary.light, 0.05),
     },
   },
   "& .MuiDataGrid-virtualScroller": {
@@ -460,6 +467,7 @@ const PlanList = () => {
             lineHeight: 1.4,
             fontWeight: 500,
             fontStyle: params.value ? "normal" : "italic",
+            color: theme.palette.text.primary,
           }}
         >
           {params?.value || "No description"}
@@ -486,7 +494,7 @@ const PlanList = () => {
           {params?.value ? (
             <Box
               sx={{
-                backgroundColor: theme.palette.success.light,
+                backgroundColor: alpha(theme.palette.success.light, 0.2),
                 borderRadius: "20px",
                 px: 1.5,
                 py: 0.5,
@@ -537,8 +545,8 @@ const PlanList = () => {
             variant="body2"
             sx={{
               fontWeight: 700,
-              color: theme.palette.info.main,
-              backgroundColor: theme.palette.info.light,
+              color: theme.palette.info.dark,
+              backgroundColor: alpha(theme.palette.info.light, 0.2),
               px: 1.5,
               py: 0.5,
               borderRadius: "20px",
@@ -561,7 +569,7 @@ const PlanList = () => {
         return (
           <Box
             sx={{
-              backgroundColor: theme.palette.grey[100],
+              backgroundColor: alpha(theme.palette.grey[300], 0.1),
               px: 1.5,
               py: 0.5,
               borderRadius: "20px",
@@ -591,7 +599,8 @@ const PlanList = () => {
           <IconButton
             onClick={() => handleEditClick(params.row)}
             sx={{
-              backgroundColor: theme.palette.primary.light,
+              backgroundColor: alpha(theme.palette.primary.light, 0.2),
+              color: theme.palette.primary.main,
               "&:hover": {
                 backgroundColor: theme.palette.primary.main,
                 color: "white",
@@ -603,7 +612,8 @@ const PlanList = () => {
           <IconButton
             onClick={() => handleDeleteClick(params.id)}
             sx={{
-              backgroundColor: theme.palette.error.light,
+              backgroundColor: alpha(theme.palette.error.light, 0.2),
+              color: theme.palette.error.main,
               "&:hover": {
                 backgroundColor: theme.palette.error.main,
                 color: "white",
@@ -655,6 +665,7 @@ const PlanList = () => {
             alignItems: "center",
             fontWeight: 500,
             borderRadius: "12px",
+            color: "white",
           }}
           iconMapping={{
             success: <CheckCircleIcon fontSize="inherit" />,
@@ -664,7 +675,6 @@ const PlanList = () => {
           {snackbar?.message}
         </Alert>
       </Snackbar>
-
       {/* Header with Create Button */}
       <Box
         sx={{
@@ -695,12 +705,18 @@ const PlanList = () => {
               WebkitTextFillColor: "transparent",
               letterSpacing: "-0.5px",
               lineHeight: 1.2,
+              mb: 1,
             }}
           >
             Advertising Plans
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Manage your advertising packages and pricing
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ maxWidth: "600px" }}
+          >
+            Manage your advertising packages and pricing strategies with our
+            premium plans designed to maximize your ROI
           </Typography>
         </Box>
         <PremiumButton
@@ -711,9 +727,249 @@ const PlanList = () => {
             boxShadow: "0 4px 14px rgba(0, 0, 0, 0.15)",
           }}
         >
-          Create Plan
+          Create New Plan
         </PremiumButton>
       </Box>
+
+      {/* Stats Summary */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={3}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: "white",
+              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.05)",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight={600}
+              >
+                TOTAL PLANS
+              </Typography>
+              <Box
+                sx={{
+                  backgroundColor: alpha(theme.palette.primary.light, 0.2),
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <CheckCircleIcon
+                  sx={{ color: theme.palette.primary.main, fontSize: 20 }}
+                />
+              </Box>
+            </Box>
+            <Typography variant="h4" fontWeight={800}>
+              {plans.length}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mt: 1, fontSize: "0.85rem" }}
+            >
+              <Box
+                component="span"
+                sx={{ color: theme.palette.success.main, fontWeight: 600 }}
+              >
+                +12%
+              </Box>{" "}
+              from last month
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: "white",
+              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.05)",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight={600}
+              >
+                CPI PLANS
+              </Typography>
+              <Box
+                sx={{
+                  backgroundColor: alpha(theme.palette.success.light, 0.2),
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <MonetizationOnIcon
+                  sx={{ color: theme.palette.success.main, fontSize: 20 }}
+                />
+              </Box>
+            </Box>
+            <Typography variant="h4" fontWeight={800}>
+              {plans.filter((p) => p.planType === "cpi").length}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mt: 1, fontSize: "0.85rem" }}
+            >
+              Most popular plan type
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: "white",
+              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.05)",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight={600}
+              >
+                REVIEW PLANS
+              </Typography>
+              <Box
+                sx={{
+                  backgroundColor: alpha(theme.palette.info.light, 0.2),
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <InfoIcon
+                  sx={{ color: theme.palette.info.main, fontSize: 20 }}
+                />
+              </Box>
+            </Box>
+            <Typography variant="h4" fontWeight={800}>
+              {plans.filter((p) => p.planType === "review").length}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mt: 1, fontSize: "0.85rem" }}
+            >
+              High conversion rates
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: "white",
+              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.05)",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight={600}
+              >
+                AVG. PLAN VALUE
+              </Typography>
+              <Box
+                sx={{
+                  backgroundColor: alpha(theme.palette.warning.light, 0.2),
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <MonetizationOnIcon
+                  sx={{ color: theme.palette.warning.main, fontSize: 20 }}
+                />
+              </Box>
+            </Box>
+            <Typography variant="h4" fontWeight={800}>
+              $
+              {plans.length > 0
+                ? Math.round(
+                    plans.reduce((acc, plan) => acc + plan.planAmount, 0) /
+                      plans.length
+                  ).toLocaleString()
+                : "0"}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mt: 1, fontSize: "0.85rem" }}
+            >
+              Across all advertising plans
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
       {/* Plan Table */}
       <Box
@@ -740,6 +996,26 @@ const PlanList = () => {
             boxShadow: "0 12px 24px rgba(0, 0, 0, 0.08)",
           }}
         >
+          <Box
+            sx={{
+              p: 3,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderBottom: `1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <Typography
+              variant="h6"
+              fontWeight={700}
+              color={theme.palette.text.primary}
+            >
+              All Advertising Plans
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {plans.length} plans available
+            </Typography>
+          </Box>
           {error ? (
             <Box
               sx={{
@@ -790,6 +1066,7 @@ const PlanList = () => {
                         borderRadius: "12px",
                         textTransform: "none",
                         fontWeight: 600,
+                        color: theme.palette.text.primary,
                       },
                     },
                   },
@@ -833,7 +1110,7 @@ const PlanList = () => {
         >
           Create New Plan
         </DialogTitle>
-        <br/>
+        <br />
         <DialogContent sx={{ py: 3, px: 3 }}>
           <Box
             component="form"
@@ -890,6 +1167,9 @@ const PlanList = () => {
                   borderRadius: "12px",
                   border: "1px solid rgba(0, 0, 0, 0.1)",
                 },
+                "& label": {
+                  color: theme.palette.text.primary,
+                },
               }}
             />
 
@@ -910,6 +1190,9 @@ const PlanList = () => {
                 "& .MuiInputBase-root": {
                   borderRadius: "12px",
                   border: "1px solid rgba(0, 0, 0, 0.1)",
+                },
+                "& label": {
+                  color: theme.palette.text.primary,
                 },
               }}
               InputProps={{
@@ -943,6 +1226,9 @@ const PlanList = () => {
                     borderRadius: "12px",
                     border: "1px solid rgba(0, 0, 0, 0.1)",
                   },
+                  "& label": {
+                    color: theme.palette.text.primary,
+                  },
                 }}
               />
             ) : (
@@ -964,6 +1250,9 @@ const PlanList = () => {
                     borderRadius: "12px",
                     border: "1px solid rgba(0, 0, 0, 0.1)",
                   },
+                  "& label": {
+                    color: theme.palette.text.primary,
+                  },
                 }}
               />
             )}
@@ -975,7 +1264,12 @@ const PlanList = () => {
           <Button
             onClick={handleCloseCreateDialog}
             color="secondary"
-            sx={{ borderRadius: "12px", px: 3, fontWeight: 600 }}
+            sx={{
+              borderRadius: "12px",
+              px: 3,
+              fontWeight: 600,
+              color: theme.palette.text.primary,
+            }}
           >
             Cancel
           </Button>
@@ -1021,7 +1315,7 @@ const PlanList = () => {
         >
           Update Plan
         </DialogTitle>
-        <br/>
+        <br />
         <DialogContent sx={{ py: 3, px: 3 }}>
           {selectedPlan && (
             <Box
@@ -1069,6 +1363,9 @@ const PlanList = () => {
                     borderRadius: "12px",
                     border: "1px solid rgba(0, 0, 0, 0.1)",
                   },
+                  "& label": {
+                    color: theme.palette.text.primary,
+                  },
                 }}
               />
 
@@ -1089,6 +1386,9 @@ const PlanList = () => {
                   "& .MuiInputBase-root": {
                     borderRadius: "12px",
                     border: "1px solid rgba(0, 0, 0, 0.1)",
+                  },
+                  "& label": {
+                    color: theme.palette.text.primary,
                   },
                 }}
                 InputProps={{
@@ -1124,6 +1424,9 @@ const PlanList = () => {
                       borderRadius: "12px",
                       border: "1px solid rgba(0, 0, 0, 0.1)",
                     },
+                    "& label": {
+                      color: theme.palette.text.primary,
+                    },
                   }}
                 />
               ) : (
@@ -1145,6 +1448,9 @@ const PlanList = () => {
                       borderRadius: "12px",
                       border: "1px solid rgba(0, 0, 0, 0.1)",
                     },
+                    "& label": {
+                      color: theme.palette.text.primary,
+                    },
                   }}
                 />
               )}
@@ -1157,7 +1463,12 @@ const PlanList = () => {
           <Button
             onClick={handleCloseUpdateDialog}
             color="secondary"
-            sx={{ borderRadius: "12px", px: 3, fontWeight: 600 }}
+            sx={{
+              borderRadius: "12px",
+              px: 3,
+              fontWeight: 600,
+              color: theme.palette.text.primary,
+            }}
           >
             Cancel
           </Button>
@@ -1197,12 +1508,18 @@ const PlanList = () => {
             py: 2,
             textAlign: "center",
             background: theme.palette.grey[100],
+            color: theme.palette.text.primary,
           }}
         >
           Confirm Delete
         </DialogTitle>
         <DialogContent sx={{ py: 3 }}>
-          <Typography variant="body1" fontWeight={500} textAlign="center">
+          <Typography
+            variant="body1"
+            fontWeight={500}
+            textAlign="center"
+            color={theme.palette.text.primary}
+          >
             Are you sure you want to delete this plan?
           </Typography>
           <Box
@@ -1218,7 +1535,7 @@ const PlanList = () => {
             <Typography
               variant="body1"
               fontWeight={600}
-              sx={{ mb: 1, textAlign: "center" }}
+              sx={{ mb: 1, textAlign: "center", color: theme.palette.error.main }}
             >
               {selectedPlan?.planDescription}
             </Typography>
@@ -1229,7 +1546,7 @@ const PlanList = () => {
               <Typography variant="body2" color="text.secondary">
                 Type:
               </Typography>
-              <Typography variant="body2" fontWeight={600}>
+              <Typography variant="body2" fontWeight={600} color={theme.palette.text.primary}>
                 {selectedPlan?.planType === "cpi" ? "CPI" : "REVIEW"}
               </Typography>
             </Box>
@@ -1239,7 +1556,7 @@ const PlanList = () => {
               <Typography variant="body2" color="text.secondary">
                 Amount:
               </Typography>
-              <Typography variant="body2" fontWeight={600}>
+              <Typography variant="body2" fontWeight={600} color={theme.palette.text.primary}>
                 ${selectedPlan?.planAmount?.toLocaleString?.()}
               </Typography>
             </Box>
@@ -1247,7 +1564,7 @@ const PlanList = () => {
               <Typography variant="body2" color="text.secondary">
                 {getTargetLabel(selectedPlan?.planType)}:
               </Typography>
-              <Typography variant="body2" fontWeight={600}>
+              <Typography variant="body2" fontWeight={600} color={theme.palette.text.primary}>
                 {getTargetValue(selectedPlan)}
               </Typography>
             </Box>
@@ -1259,7 +1576,12 @@ const PlanList = () => {
           <Button
             onClick={handleCloseDeleteDialog}
             color="secondary"
-            sx={{ borderRadius: "12px", px: 3, fontWeight: 600 }}
+            sx={{
+              borderRadius: "12px",
+              px: 3,
+              fontWeight: 600,
+              color: theme.palette.text.primary,
+            }}
           >
             Cancel
           </Button>
@@ -1276,6 +1598,7 @@ const PlanList = () => {
               px: 3,
               fontWeight: 600,
               background: `linear-gradient(45deg, ${theme.palette.error.main} 0%, ${theme.palette.error.dark} 100%)`,
+              color: "white",
               "&:hover": {
                 boxShadow: theme.shadows[4],
               },

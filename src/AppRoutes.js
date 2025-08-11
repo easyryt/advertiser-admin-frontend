@@ -50,7 +50,7 @@ const AppRoutes = () => {
           <Route path="dashboard/campaigns-details" element={<CampaignDetails />} />
           <Route path="dashboard/campaign-list" element={<CampaignList/>} />
           <Route path="dashboard/advertisers" element={<AdvertisersDataGrid />} />
-          <Route path="dashboard/advertiser-analytics-/:advertiserId" element={<AdvertiserAnalyticsDashboard />} />
+          <Route path="dashboard/advertiser-analytics/:advertiserId" element={<AdvertiserAnalyticsDashboard />} />
           <Route path="dashboard/users" element={<UsersPage />} />
           <Route path="dashboard/products" element={<ProductsPage />} />
           <Route path="dashboard/analytics" element={<AnalyticsPage />} />
