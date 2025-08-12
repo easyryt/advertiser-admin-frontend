@@ -7,10 +7,8 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Avatar,
   Tooltip,
   Typography,
-  IconButton,
   Box,
   styled,
   useTheme,
@@ -26,13 +24,12 @@ import {
   Settings,
   Inventory,
   Mail as MessagesIcon,
-  ChevronLeft,
-  ChevronRight,
   SupportAgent,
 } from "@mui/icons-material";
 import BallotIcon from "@mui/icons-material/Ballot";
 import CampaignsIcon from "@mui/icons-material/Campaign";
 import GroupsIcon from "@mui/icons-material/Groups";
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const PRIMARY_COLOR = "#1976d2";
 const SECONDARY_COLOR = "#4dabf5";
@@ -139,6 +136,7 @@ const iconComponents = {
   Messages: MessagesIcon,
   Campaigns: CampaignsIcon,
   Advertisers: GroupsIcon,
+  Rewards:EmojiEventsIcon,
 };
 
 export default function Sidebar({

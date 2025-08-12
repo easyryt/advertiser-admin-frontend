@@ -63,6 +63,11 @@ export default function DashboardLayout() {
       icon: "Advertisers",
       path: "/dashboard/advertisers",
     },
+    {
+      text: "Rewards",
+      icon: "Rewards",
+      path: "/dashboard/reward-dashboard",
+    },
   ], []);
 
   const nonSidebarPages = [

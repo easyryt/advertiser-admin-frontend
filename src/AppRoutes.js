@@ -19,6 +19,7 @@ import CampaignDetails from "./pages/CampaignDetails";
 import CampaignList from "./pages/CampaignList";
 import AdvertisersDataGrid from "./pages/AdvertisersDataGrid";
 import AdvertiserAnalyticsDashboard from "./pages/AdvertiserAnalyticsDashboard";
+import RewardDashboard from "./pages/RewardDashboard";
 
 const AppRoutes = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -46,6 +47,7 @@ const AppRoutes = () => {
         >
           <Route path="dashboard" element={<DashboardHomePage />} />
           <Route path="dashboard/plan-list" element={<PlanList />} />
+          <Route path="dashboard/reward-dashboard" element={<RewardDashboard />} />
           <Route path="dashboard/campaigns/:advertiserId" element={<CampaignsPage />} />
           <Route path="dashboard/campaigns-details" element={<CampaignDetails />} />
           <Route path="dashboard/campaign-list" element={<CampaignList/>} />
