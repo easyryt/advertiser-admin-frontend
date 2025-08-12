@@ -44,22 +44,22 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 
-// Premium theme configuration
+// Premium light blue theme configuration
 const theme = createTheme({
   palette: {
     primary: { 
-      main: '#4a148c',
-      light: '#7c43bd',
-      dark: '#12005e'
+      main: '#1976d2',       // Vibrant premium blue
+      light: '#42a5f5',      // Lighter blue
+      dark: '#1565c0'        // Darker blue
     },
     secondary: { 
-      main: '#ff4081',
-      light: '#ff79b0',
-      dark: '#c60055'
+      main: '#ff9800',       // Complementary amber
+      light: '#ffb74d',
+      dark: '#f57c00'
     },
     background: { 
-      default: '#f5f7fa',
-      paper: '#ffffff'
+      default: '#f0f5ff',    // Very light blue tint
+      paper: '#ffffff'       // Pure white
     },
     success: {
       main: '#4caf50'
@@ -113,17 +113,17 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         containedPrimary: {
-          background: 'linear-gradient(45deg, #4a148c 30%, #7c43bd 90%)',
-          boxShadow: '0 3px 5px 2px rgba(74, 20, 140, .2)',
+          background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
+          boxShadow: '0 3px 5px 2px rgba(25, 118, 210, .2)',
           '&:hover': {
-            background: 'linear-gradient(45deg, #3a0d6d 30%, #6a33a8 90%)',
+            background: 'linear-gradient(45deg, #1565c0 30%, #1976d2 90%)',
           }
         },
         containedSecondary: {
-          background: 'linear-gradient(45deg, #ff4081 30%, #ff79b0 90%)',
-          boxShadow: '0 3px 5px 2px rgba(255, 64, 129, .2)',
+          background: 'linear-gradient(45deg, #ff9800 30%, #ffb74d 90%)',
+          boxShadow: '0 3px 5px 2px rgba(255, 152, 0, .2)',
           '&:hover': {
-            background: 'linear-gradient(45deg, #e0006b 30%, #ff5da0 90%)',
+            background: 'linear-gradient(45deg, #f57c00 30%, #ff9800 90%)',
           }
         }
       }
@@ -621,7 +621,7 @@ const RewardDashboard = () => {
             position: 'fixed', 
             bottom: 32, 
             right: 32,
-            background: 'linear-gradient(45deg, #4a148c 30%, #7c43bd 90%)'
+            background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)'
           }}
           onClick={handleCreateClick}
         >
