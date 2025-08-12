@@ -497,7 +497,6 @@ const CampaignList = () => {
           columns={columns}
           getRowId={(row) => row._id || Math.random().toString(36)}
           rowCount={totalRows}
-          loading={loading}
           pagination
           paginationMode="server"
           paginationModel={paginationModel}
