@@ -2,1166 +2,1683 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Box,
-  Grid,
-  Typography,
   Card,
-  CardContent,
+  Typography,
+  Grid,
   Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  LinearProgress,
+  useTheme,
+  Fade,
+  Grow,
+  Slide,
+  IconButton,
+  Tooltip,
+  Avatar,
   Divider,
+  Chip,
+  Stack,
+  alpha,
+  Skeleton,
+  Alert,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   TextField,
   MenuItem,
-  Button,
-  IconButton,
-  CircularProgress,
-  InputAdornment,
+  Select,
   FormControl,
   InputLabel,
-  Select,
-  Chip,
 } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import {
-  BarChart,
+  ResponsiveContainer,
+  ComposedChart,
   Bar,
-  AreaChart,
   Area,
+  XAxis,
+  YAxis,
+  Tooltip as ChartTooltip,
+  CartesianGrid,
+  Legend,
   PieChart,
   Pie,
   Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from "recharts";
-import { DataGrid } from "@mui/x-data-grid";
 import {
-  FilterList,
-  DateRange,
   ArrowUpward,
   ArrowDownward,
+  FilterList,
   Refresh,
-  MonetizationOn,
-  Cached,
-  TrendingUp,
-  People,
-  TouchApp,
-  RateReview,
   Campaign,
+  MonetizationOn,
+  AttachMoney,
+  PieChart as PieChartIcon,
+  BarChart as BarChartIcon,
+  Close,
+  Check,
+  ArrowForward,
 } from "@mui/icons-material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { motion } from "framer-motion";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useParams } from "react-router-dom";
 
-// Light theme with white background
-const theme = createTheme({
-  palette: {
-    mode: "light",
-    primary: {
-      main: "#4361ee",
-    },
-    secondary: {
-      main: "#3a0ca3",
-    },
-    background: {
-      default: "#f8f9fa",
-      paper: "#ffffff",
-    },
-    success: {
-      main: "#2ecc71",
-    },
-    warning: {
-      main: "#f39c12",
-    },
-    error: {
-      main: "#e74c3c",
-    },
-    info: {
-      main: "#3498db",
-    },
-  },
-  typography: {
-    fontFamily: "'Inter', sans-serif",
-    h4: {
-      fontWeight: 700,
-      letterSpacing: "-0.5px",
-      color: "#2d3436",
-    },
-    h5: {
-      fontWeight: 600,
-      color: "#2d3436",
-    },
-    h6: {
-      fontWeight: 500,
-      color: "#2d3436",
-    },
-  },
-  components: {
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: "16px",
-          background: "#ffffff",
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-          transition: "transform 0.3s ease, box-shadow 0.3s ease",
-          "&:hover": {
-            transform: "translateY(-5px)",
-            boxShadow: "0 8px 30px rgba(67, 97, 238, 0.2)",
-          },
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: "12px",
-          textTransform: "none",
-          fontWeight: 600,
-          padding: "10px 20px",
-        },
-        contained: {
-          background: "linear-gradient(45deg, #4361ee, #3a0ca3)",
-          boxShadow: "0 4px 15px rgba(67, 97, 238, 0.2)",
-          color: "#ffffff",
-          "&:hover": {
-            background: "linear-gradient(45deg, #3a56e0, #2f0a8a)",
-            boxShadow: "0 6px 20px rgba(67, 97, 238, 0.3)",
-          },
-        },
-        outlined: {
-          border: "2px solid rgba(67, 97, 238, 0.3)",
-          color: "#4361ee",
-          "&:hover": {
-            border: "2px solid #4361ee",
-            background: "rgba(67, 97, 238, 0.05)",
-          },
-        },
-      },
-    },
-    MuiDataGrid: {
-      styleOverrides: {
-        root: {
-          border: "none",
-          "& .MuiDataGrid-cell": {
-            borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: "rgba(67, 97, 238, 0.05)",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
-          },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "rgba(67, 97, 238, 0.03)",
-            borderTop: "1px solid rgba(0, 0, 0, 0.08)",
-          },
-        },
-      },
-    },
-  },
-});
 
-// Sample data structure for development when API is unavailable
-const sampleData = {
-  status: true,
-  data: {
-    summary: {
-      totalCampaigns: 1,
-      totalBudget: 500,
-      totalSpent: 2.5,
-      totalInstalls: 1,
-      totalReviews: 0,
-      totalClicks: 28,
-      activeCampaigns: 1,
-      completedCampaigns: 0,
-      pausedCampaigns: 0,
-      pendingCampaigns: 0,
-      averageCTR: 0.0357,
-      averageCPC: 0.0893,
-      budgetUtilization: 0.005,
-    },
-    campaigns: [
-      {
-        _id: "6890bc04af109e2aa1b78080",
-        name: "NotaAI - Ask AI Chat to Write",
-        type: "cpi",
-        budgetTotal: 500,
-        budgetSpent: 2.5,
-        appLogo: {
-          filename: "applogoAdv/hn0fwex8m7i9obigxnha",
-          url: "https://res.cloudinary.com/ddy5sbdtr/image/upload/v1754315780/applogoAdv/hn0fwex8m7i9obigxnha.webp",
-        },
-        costPerInstall: 2.5,
-        installsCount: 1,
-        reviewCount: 0,
-        clickCount: 28,
-        status: "approved",
-        createdAt: "2025-08-04T13:56:20.151Z",
-        endDate: "2025-08-09T19:27:26.366Z",
-        startDate: "2025-08-04T19:27:26.366Z",
-        packageName:
-          "https://play.google.com/store/apps/details?id=com.notaAINotesAIChatOCR&pcampaignid=web_share",
-        remainingBudget: 497.5,
-        budgetUtilization: 0.005,
-        ctr: 0.0357,
-        cpc: 0.0893,
-      },
-    ],
-    performanceByType: [
-      {
-        count: 1,
-        totalBudget: 500,
-        totalSpent: 2.5,
-        totalInstalls: 1,
-        totalReviews: 0,
-        totalClicks: 28,
-        avgCTR: 0.0357,
-        avgCPC: 0.0893,
-        type: "cpi",
-      },
-    ],
-    monthlyPerformance: [
-      {
-        month: "2025-08",
-        totalCampaigns: 1,
-        totalSpent: 2.5,
-        totalInstalls: 1,
-        totalReviews: 0,
-        totalClicks: 28,
-      },
-    ],
-    statusDistribution: [
-      {
-        count: 1,
-        totalBudget: 500,
-        status: "approved",
-      },
-    ],
-  },
+
+
+// Initial filter values
+const INITIAL_FILTERS = {
+  startDate: new Date("2025-07-01"),
+  endDate: new Date("2025-08-31"),
+  status: ["approved", "completed"],
+  type: "cpi",
+  minBudget: 500,
+  maxBudget: 1000,
+  sortOrder: "asc",
 };
 
-const COLORS = [
-  "#4361ee",
-  "#3a0ca3",
-  "#4cc9f0",
-  "#4895ef",
-  "#560bad",
-  "#7209b7",
-];
-const STATUS_COLORS = {
-  approved: "#2ecc71",
-  pending: "#f39c12",
-  completed: "#3498db",
-  paused: "#e74c3c",
+// ---------- UTILS ----------
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(value ?? 0);
+
+const formatPercent = (value) =>
+  value !== undefined ? `${(value * 100).toFixed(1)}%` : "0.0%";
+
+const formatNumber = (value) =>
+  new Intl.NumberFormat("en-IN").format(value ?? 0);
+
+// --------- STATUS COLOR ---------
+const useStatusColor = () => {
+  const theme = useTheme();
+  return (status) => {
+    const map = {
+      active: theme.palette.success.main,
+      completed: theme.palette.info.main,
+      approved: theme.palette.success.dark,
+      paused: theme.palette.warning.main,
+      pending: theme.palette.grey[500],
+    };
+    return map[(status || "").toLowerCase()] || theme.palette.primary.light;
+  };
 };
 
-const AdvertiserAnalyticsDashboard = () => {
-  const [data, setData] = useState(null);
+// ----------- FILTER DIALOG -----------
+const FilterDialog = ({ open, onClose, filters, setFilters, applyFilters }) => {
+  const handleStatusChange = (event) => {
+    const { value } = event.target;
+    // Support "All" option
+    if (value.includes("all")) {
+      setFilters((prev) => ({
+        ...prev,
+        status: ["active", "completed", "approved", "paused", "pending"],
+      }));
+    } else {
+      setFilters((prev) => ({ ...prev, status: value }));
+    }
+  };
+
+  const handleTypeChange = (event) => {
+    setFilters((prev) => ({ ...prev, type: event.target.value }));
+  };
+
+  const handleSortChange = (event) => {
+    setFilters((prev) => ({ ...prev, sortOrder: event.target.value }));
+  };
+
+  const handleMinBudgetChange = (event) => {
+    setFilters((prev) => ({ ...prev, minBudget: Number(event.target.value) }));
+  };
+
+  const handleMaxBudgetChange = (event) => {
+    setFilters((prev) => ({ ...prev, maxBudget: Number(event.target.value) }));
+  };
+
+  const handleStartDateChange = (date) => {
+    setFilters((prev) => ({ ...prev, startDate: date }));
+  };
+
+  const handleEndDateChange = (date) => {
+    setFilters((prev) => ({ ...prev, endDate: date }));
+  };
+
+  const handleApply = () => {
+    applyFilters(filters);
+    onClose();
+  };
+
+  const handleReset = () => {
+    setFilters({ ...INITIAL_FILTERS });
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Box display="flex" alignItems="center">
+          <FilterList sx={{ mr: 1 }} />
+          <Typography variant="h6">Filter Campaigns</Typography>
+        </Box>
+        <IconButton onClick={onClose}>
+          <Close />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers sx={{ pt: 2 }}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <DatePicker
+                label="Start Date"
+                value={filters.startDate}
+                onChange={handleStartDateChange}
+                slotProps={{ textField: { fullWidth: true } }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <DatePicker
+                label="End Date"
+                value={filters.endDate}
+                onChange={handleEndDateChange}
+                slotProps={{ textField: { fullWidth: true } }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  multiple
+                  value={filters.status}
+                  onChange={handleStatusChange}
+                  label="Status"
+                  renderValue={(selected) => selected.join(", ")}
+                >
+                  {[
+                    "all",
+                    "active",
+                    "completed",
+                    "approved",
+                    "paused",
+                    "pending",
+                  ].map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status === "all"
+                        ? "All"
+                        : status.charAt(0).toUpperCase() + status.slice(1)}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel>Campaign Type</InputLabel>
+                <Select
+                  value={filters.type}
+                  onChange={handleTypeChange}
+                  label="Campaign Type"
+                >
+                  {["cpi", "cpa", "cpc", "cpm"].map((type) => (
+                    <MenuItem key={type} value={type}>
+                      {type.toUpperCase()}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Min Budget (₹)"
+                type="number"
+                value={filters.minBudget}
+                onChange={handleMinBudgetChange}
+                fullWidth
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Max Budget (₹)"
+                type="number"
+                value={filters.maxBudget}
+                onChange={handleMaxBudgetChange}
+                fullWidth
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel>Sort Order</InputLabel>
+                <Select
+                  value={filters.sortOrder}
+                  onChange={handleSortChange}
+                  label="Sort Order"
+                >
+                  <MenuItem value="asc">Ascending</MenuItem>
+                  <MenuItem value="desc">Descending</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </LocalizationProvider>
+      </DialogContent>
+      <DialogActions sx={{ p: 2 }}>
+        <Button
+          onClick={handleReset}
+          variant="outlined"
+          color="secondary"
+          startIcon={<Refresh />}
+        >
+          Reset
+        </Button>
+        <Button
+          onClick={handleApply}
+          variant="contained"
+          color="primary"
+          startIcon={<Check />}
+        >
+          Apply Filters
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+// ------- Top Filters Bar (All Filters) -------
+const TopFiltersBar = ({
+  filters,
+  onOpenFilter,
+  onRefresh,
+  activeChips = [],
+}) => {
+  const theme = useTheme();
+  return (
+    <Box
+      sx={{
+        p: 2,
+        bgcolor: "#ffffff",
+        borderBottom: "1px solid rgba(0,0,0,0.06)",
+        position: "sticky",
+        top: 0,
+        zIndex: 10,
+      }}
+    >
+      <Box
+        sx={{
+          maxWidth: 1600,
+          mx: "auto",
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          flexWrap: "wrap",
+        }}
+      >
+        <Typography variant="h6" fontWeight={800} sx={{ mr: 2 }}>
+          Dashboard
+        </Typography>
+        {activeChips.map((chip, i) => (
+          <Chip
+            key={i}
+            label={chip}
+            size="small"
+            sx={{
+              bgcolor: alpha(theme.palette.primary.light, 0.18),
+              color: theme.palette.primary.dark,
+              fontWeight: 600,
+            }}
+          />
+        ))}
+        <Box sx={{ ml: "auto", display: "flex", gap: 1 }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<FilterList />}
+            onClick={onOpenFilter}
+          >
+            All Filters
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Refresh />}
+            onClick={onRefresh}
+          >
+            Refresh
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+// ------- Reusable Header for cards -------
+const Header = ({ title, onFilter, onRefresh }) => (
+  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+    <Typography variant="h6" fontWeight={700} color="text.primary">
+      {title}
+    </Typography>
+    <Box display="flex" gap={1}>
+      <Tooltip title="Filter">
+        <IconButton
+          size="small"
+          sx={{
+            bgcolor: "#f1f5fe",
+            borderRadius: 2,
+            "&:hover": { bgcolor: "#e6edfe" },
+          }}
+          onClick={onFilter}
+        >
+          <FilterList fontSize="small" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Refresh data">
+        <IconButton
+          size="small"
+          sx={{
+            bgcolor: "#f1f5fe",
+            borderRadius: 2,
+            "&:hover": { bgcolor: "#e6edfe" },
+          }}
+          onClick={onRefresh}
+        >
+          <Refresh fontSize="small" />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  </Box>
+);
+
+// ------- SUMMARY CARD -----------
+const SummaryCard = ({ title, value, icon, color, trend }) => (
+  <motion.div
+    initial={{ y: 20, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    whileHover={{ y: -4, boxShadow: "0 8px 24px 1px rgba(92,65,184,.13)" }}
+    transition={{ type: "spring", stiffness: 300, damping: 22 }}
+  >
+    <Card
+      elevation={0}
+      sx={{
+        borderRadius: 4,
+        p: 3,
+        background: "linear-gradient(to bottom right, #ffffff, #f9faff)",
+        border: "1px solid rgba(224, 230, 255, 0.7)",
+        boxShadow:
+          "0 12px 40px -10px rgba(101, 116, 255, 0.08), 0 1.5px 10px -3px rgba(0,0,0,0.03)",
+        height: "100%",
+        minWidth: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box>
+          <Typography
+            variant="subtitle2"
+            color="text.secondary"
+            fontWeight={600}
+          >
+            {title}
+          </Typography>
+          <Typography variant="h4" fontWeight={900} mt={0.5}>
+            {value}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            bgcolor: alpha(color, 0.1),
+            color,
+            width: 48,
+            height: 48,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "50%",
+            boxShadow: `0 8px 19px 0 ${alpha(color, 0.17)}`,
+          }}
+        >
+          {icon}
+        </Box>
+      </Box>
+      <Box display="flex" alignItems="center" mt={1}>
+        {trend >= 0 ? (
+          <ArrowUpward
+            fontSize="small"
+            sx={{ color: trend === 0 ? "text.secondary" : "success.main" }}
+          />
+        ) : (
+          <ArrowDownward fontSize="small" sx={{ color: "error.main" }} />
+        )}
+        <Typography
+          variant="body2"
+          ml={0.5}
+          sx={{
+            color:
+              trend === 0
+                ? "text.secondary"
+                : trend > 0
+                ? "success.main"
+                : "error.main",
+            fontWeight: 700,
+          }}
+        >
+          {trend === 0 ? "0.0%" : `${Math.abs(trend).toFixed(1)}%`}
+        </Typography>
+        <Typography
+          variant="caption"
+          ml={1}
+          color="text.secondary"
+          fontWeight={600}
+        >
+          from last month
+        </Typography>
+      </Box>
+    </Card>
+  </motion.div>
+);
+
+// ------- STATUS CARD -----------
+const StatusCard = ({ status, count, color, icon }) => (
+  <motion.div
+    initial={{ scale: 0.98, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    whileHover={{
+      scale: 1.06,
+      boxShadow: "0 5px 32px -7px " + alpha(color, 0.24),
+    }}
+    transition={{ type: "spring", stiffness: 200, damping: 30 }}
+  >
+    <Card
+      elevation={0}
+      sx={{
+        p: 2,
+        borderRadius: 4,
+        background: "linear-gradient(to bottom right, #ffffff, #f9faff)",
+        border: "1px solid rgba(224, 230, 255, 0.7)",
+        boxShadow:
+          "0 12px 40px -10px rgba(101, 116, 255, 0.08), 0 1.5px 10px -3px rgba(0,0,0,0.03)",
+        minHeight: 92,
+        height: "100%",
+      }}
+    >
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="subtitle2" fontWeight={800}>
+          {status} Campaigns
+        </Typography>
+        <Box
+          sx={{
+            bgcolor: alpha(color, 0.13),
+            color,
+            borderRadius: "50%",
+            width: 34,
+            height: 34,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {icon}
+        </Box>
+      </Box>
+      <Box display="flex" alignItems="flex-end" mt={1}>
+        <Typography variant="h4" fontWeight={800} sx={{ color }}>
+          {count}
+        </Typography>
+      </Box>
+    </Card>
+  </motion.div>
+);
+
+// ------- METRIC CARD -----------
+const MetricCard = ({ title, value, icon, trend, color }) => (
+  <motion.div
+    initial={{ y: 14, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    whileHover={{ scale: 1.03 }}
+    transition={{ type: "spring", stiffness: 240, damping: 18 }}
+  >
+    <Card
+      elevation={0}
+      sx={{
+        p: 2,
+        borderRadius: 4,
+        minHeight: 89,
+        background: "linear-gradient(to bottom right, #ffffff, #f9faff)",
+        border: "1px solid rgba(224, 230, 255, 0.7)",
+        boxShadow:
+          "0 12px 40px -10px rgba(101, 116, 255, 0.08), 0 1.5px 10px -3px rgba(0,0,0,0.03)",
+        height: "100%",
+      }}
+    >
+      <Typography variant="subtitle2" color="text.secondary" fontWeight={600}>
+        {title}
+      </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mt={1}
+      >
+        <Typography variant="h4" fontWeight={800}>
+          {value}
+        </Typography>
+        <Box display="flex" alignItems="center">
+          <Typography variant="body2" fontWeight={700} sx={{ color }}>
+            {trend}
+          </Typography>
+          <Box ml={1} sx={{ color }}>
+            {icon}
+          </Box>
+        </Box>
+      </Box>
+    </Card>
+  </motion.div>
+);
+
+// ----------- MAIN DASHBOARD -----------
+const AdvertiserAnalyticsDashboard= () => {
+  const theme = useTheme();
+  const getStatusColor = useStatusColor();
+  const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters, setFilters] = useState({
-    startDate: null,
-    endDate: null,
-    status: [],
-    type: "",
-    minBudget: "",
-    maxBudget: "",
-    sortBy: "budgetUtilization",
-    sortOrder: "asc",
-  });
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+
+  const [appliedFilters, setAppliedFilters] = useState(null);
+  const [tempFilters, setTempFilters] = useState({ ...INITIAL_FILTERS });
   const {advertiserId} = useParams()
 
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
+  const applyFilters = (filters) => {
+    setAppliedFilters(filters);
+    fetchData(filters);
+  };
+
+  const fetchData = async (filters = null) => {
     try {
-      // Construct query parameters
-      const params = new URLSearchParams();
-      if (filters.startDate)
-        params.append(
-          "startDate",
-          filters.startDate.toISOString().split("T")[0]
-        );
-      if (filters.endDate)
-        params.append("endDate", filters.endDate.toISOString().split("T")[0]);
-      filters.status.forEach((status) => params.append("status[]", status));
-      if (filters.type) params.append("type", filters.type);
-      if (filters.minBudget) params.append("minBudget", filters.minBudget);
-      if (filters.maxBudget) params.append("maxBudget", filters.maxBudget);
-      params.append("sortBy", filters.sortBy);
-      params.append("sortOrder", filters.sortOrder);
+      setLoading(true);
+      setError(null);
 
-      const response = await axios.get(
-        `https://advertiserappnew.onrender.com/admin/analytics/adv/analytics/${advertiserId}`,
-        {
-          withCredentials: true,
-          params,
-        }
-      );
+      let params = {};
 
-      if (response.data.status) {
-        setData(response.data.data);
+      if (filters) {
+        params = {
+          startDate: filters.startDate?.toISOString?.().split("T")[0],
+          endDate: filters.endDate?.toISOString?.().split("T")[0],
+          "status[]": filters.status,
+          type: filters.type,
+          minBudget: filters.minBudget,
+          maxBudget: filters.maxBudget,
+          sortOrder: filters.sortOrder,
+        };
+      }
+
+      const response = await axios.get(`https://advertiserappnew.onrender.com/admin/analytics/adv/analytics/${advertiserId}`, {
+        params,
+        withCredentials: true,
+      });
+
+      if (response.data && response.data.status) {
+        setDashboardData(response.data);
       } else {
-        throw new Error("Failed to fetch data from server");
+        throw new Error("Invalid API response structure");
       }
     } catch (err) {
-      console.error("Error fetching data:", err);
-      setError("Failed to fetch data. Using sample data for demonstration.");
-      // Use sample data for demonstration
-      setData(sampleData.data);
+      setError(err.message || "Failed to fetch dashboard data");
+      console.error("API Error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [filters, advertiserId]);
-
-  const handleFilterChange = (name, value) => {
-    setFilters((prev) => ({ ...prev, [name]: value }));
+  const handleOpenFilterDialog = () => {
+    setTempFilters(appliedFilters || { ...INITIAL_FILTERS });
+    setFilterDialogOpen(true);
   };
 
-  const handleStatusChange = (event) => {
-    const { value } = event.target;
-    setFilters((prev) => ({
-      ...prev,
-      status: typeof value === "string" ? value.split(",") : value,
-    }));
+  const handleCloseFilterDialog = () => {
+    setFilterDialogOpen(false);
   };
 
-  const resetFilters = () => {
-    setFilters({
-      startDate: null,
-      endDate: null,
-      status: [],
-      type: "",
-      minBudget: "",
-      maxBudget: "",
-      sortBy: "budgetUtilization",
-      sortOrder: "asc",
-    });
+  const getActiveFilters = () => {
+    if (!appliedFilters) return [];
+    return [
+      `Date: ${appliedFilters.startDate?.toLocaleDateString?.() || ""} - ${
+        appliedFilters.endDate?.toLocaleDateString?.() || ""
+      }`,
+      `Status: ${appliedFilters.status.join(", ")}`,
+      `Type: ${appliedFilters.type.toUpperCase()}`,
+      `Budget: ₹${appliedFilters.minBudget} - ₹${appliedFilters.maxBudget}`,
+    ];
   };
 
-  // Campaign Data Grid columns
-  const campaignColumns = [
-    {
-      field: "name",
-      headerName: "Campaign Name",
-      width: 250,
-      renderCell: (params) => (
-        <Box display="flex" alignItems="center">
-          <img
-            src={params.row.appLogo.url}
-            alt="App Logo"
-            style={{ width: 40, height: 40, borderRadius: 8, marginRight: 12 }}
-          />
-          <Typography variant="body2" fontWeight={600} color="text.primary">
-            {params.value}
-          </Typography>
-        </Box>
-      ),
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 130,
-      renderCell: (params) => (
-        <Chip
-          label={params.value.charAt(0).toUpperCase() + params.value.slice(1)}
-          size="small"
-          sx={{
-            backgroundColor: `${STATUS_COLORS[params.value]}22`,
-            color: STATUS_COLORS[params.value],
-            fontWeight: 600,
-            border: `1px solid ${STATUS_COLORS[params.value]}`,
-          }}
-        />
-      ),
-    },
-    {
-      field: "type",
-      headerName: "Type",
-      width: 100,
-      renderCell: (params) => (
-        <Typography
-          variant="body2"
-          fontWeight={600}
-          textTransform="uppercase"
-          color="text.secondary"
-        >
-          {params.value}
-        </Typography>
-      ),
-    },
-    {
-      field: "budgetTotal",
-      headerName: "Total Budget",
-      width: 140,
-      renderCell: (params) => (
-        <Typography variant="body2" fontWeight={600} color="text.primary">
-          ₹{params.value.toLocaleString()}
-        </Typography>
-      ),
-    },
-    {
-      field: "budgetSpent",
-      headerName: "Spent",
-      width: 120,
-      renderCell: (params) => (
-        <Typography variant="body2" fontWeight={600} color="#4361ee">
-          ₹{params.value.toLocaleString()}
-        </Typography>
-      ),
-    },
-    {
-      field: "budgetUtilization",
-      headerName: "Utilization",
-      width: 140,
-      renderCell: (params) => (
-        <Box width="100%" display="flex" alignItems="center">
-          <Box flex={1} mr={1}>
-            <Box
-              bgcolor="rgba(67, 97, 238, 0.1)"
-              height={8}
-              borderRadius={4}
-              width="100%"
-            >
-              <Box
-                bgcolor="#4361ee"
-                height="100%"
-                borderRadius={4}
-                width={`${params.value * 100}%`}
-              />
-            </Box>
-          </Box>
-          <Typography variant="body2" fontWeight={600} color="text.primary">
-            {(params.value * 100).toFixed(1)}%
-          </Typography>
-        </Box>
-      ),
-    },
-    {
-      field: "clickCount",
-      headerName: "Clicks",
-      width: 100,
-      renderCell: (params) => (
-        <Box display="flex" alignItems="center">
-          <TouchApp fontSize="small" sx={{ color: "#3498db", mr: 0.5 }} />
-          <Typography variant="body2" fontWeight={600} color="text.primary">
-            {params.value}
-          </Typography>
-        </Box>
-      ),
-    },
-    {
-      field: "installsCount",
-      headerName: "Installs",
-      width: 100,
-      renderCell: (params) => (
-        <Box display="flex" alignItems="center">
-          <People fontSize="small" sx={{ color: "#2ecc71", mr: 0.5 }} />
-          <Typography variant="body2" fontWeight={600} color="text.primary">
-            {params.value}
-          </Typography>
-        </Box>
-      ),
-    },
-    {
-      field: "ctr",
-      headerName: "CTR",
-      width: 100,
-      renderCell: (params) => (
-        <Typography variant="body2" fontWeight={600} color="#f39c12">
-          {(params.value * 100).toFixed(1)}%
-        </Typography>
-      ),
-    },
-    {
-      field: "cpc",
-      headerName: "CPC",
-      width: 100,
-      renderCell: (params) => (
-        <Typography variant="body2" fontWeight={600} color="#e74c3c">
-          ₹{params.value.toFixed(2)}
-        </Typography>
-      ),
-    },
-  ];
+  // Shared SX for flawless chart sizing
+  const chartCardSX = {
+    p: 3,
+    borderRadius: 4,
+    minHeight: 420,
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    overflow: "hidden",
+    background: "linear-gradient(to bottom right, #ffffff, #f9faff)",
+    border: "1px solid rgba(224, 230, 255, 0.7)",
+    boxShadow:
+      "0 12px 40px -10px rgba(101, 116, 255, 0.08), 0 1.5px 10px -3px rgba(0,0,0,0.03)",
+  };
 
-  return (
-    <ThemeProvider theme={theme}>
+  const chartContainerSX = {
+    flex: 1,
+    width: "100%",
+    minHeight: 300,
+    mt: 1,
+    pb: 1,
+    overflow: "hidden",
+  };
+
+  const tableCardSX = {
+    p: 3,
+    borderRadius: 4,
+    background: "linear-gradient(to bottom right, #ffffff, #f9faff)",
+    border: "1px solid rgba(224, 230, 255, 0.7)",
+    boxShadow:
+      "0 12px 40px -10px rgba(101, 116, 255, 0.08), 0 1.5px 10px -3px rgba(0,0,0,0.03)",
+  };
+
+  if (loading)
+    return (
       <Box
-        sx={{
-          minHeight: "100vh",
-          bgcolor: "background.default",
-          p: { xs: 2, md: 4 },
-        }}
+        minHeight="100vh"
+        display="flex"
+        flexDirection="column"
+        bgcolor="#f8fafd"
       >
-        <Box sx={{ mb: 4 }}>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            flexWrap="wrap"
-          >
-            <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ mb: 0.5 }}>
-                Advertiser Analytics Dashboard
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Comprehensive analytics and performance metrics
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center" gap={1}>
+        <TopFiltersBar
+          filters={appliedFilters || INITIAL_FILTERS}
+          onOpenFilter={handleOpenFilterDialog}
+          onRefresh={() => fetchData(appliedFilters)}
+        />
+        <Box sx={{ p: 3, maxWidth: 1600, margin: "0 auto", width: "100%" }}>
+          <Skeleton variant="text" width={200} height={40} sx={{ mb: 3 }} />
+          <Grid container spacing={3}>
+            {[1, 2, 3, 4].map((item) => (
+              <Grid item xs={12} sm={6} md={3} key={item}>
+                <Skeleton variant="rounded" width="100%" height={140} />
+              </Grid>
+            ))}
+          </Grid>
+          <Grid container spacing={3} mt={0}>
+            <Grid item xs={12} md={8}>
+              <Skeleton
+                variant="rounded"
+                width="100%"
+                height={420}
+                sx={{ mt: 3 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Skeleton
+                variant="rounded"
+                width="100%"
+                height={420}
+                sx={{ mt: 3 }}
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={3} mt={1}>
+            <Grid item xs={12} md={8}>
+              <Skeleton
+                variant="rounded"
+                width="100%"
+                height={360}
+                sx={{ mt: 3 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Skeleton
+                variant="rounded"
+                width="100%"
+                height={360}
+                sx={{ mt: 3 }}
+              />
+            </Grid>
+          </Grid>
+          <Skeleton
+            variant="rounded"
+            width="100%"
+            height={480}
+            sx={{ mt: 3 }}
+          />
+        </Box>
+      </Box>
+    );
+
+  if (error) {
+    return (
+      <Box
+        minHeight="100vh"
+        display="flex"
+        flexDirection="column"
+        bgcolor="#f8fafd"
+      >
+        <TopFiltersBar
+          filters={appliedFilters || INITIAL_FILTERS}
+          onOpenFilter={handleOpenFilterDialog}
+          onRefresh={() => fetchData(appliedFilters)}
+        />
+        <Box
+          minHeight="60vh"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Alert severity="error" sx={{ width: "100%", maxWidth: 500 }}>
+            <Typography variant="h6" fontWeight={700}>
+              Data Loading Error
+            </Typography>
+            <Typography>{error}</Typography>
+            <Box mt={2}>
               <Button
-                variant="outlined"
+                variant="contained"
+                color="primary"
                 startIcon={<Refresh />}
-                onClick={fetchData}
-                disabled={loading}
+                onClick={() => fetchData(appliedFilters)}
               >
-                Refresh Data
+                Try Again
               </Button>
             </Box>
-          </Box>
+          </Alert>
+        </Box>
+      </Box>
+    );
+  }
 
-          <Divider sx={{ my: 3, bgcolor: "rgba(0, 0, 0, 0.08)" }} />
+  if (!dashboardData || !dashboardData.data) {
+    return (
+      <Box
+        minHeight="100vh"
+        display="flex"
+        flexDirection="column"
+        bgcolor="#f8fafd"
+      >
+        <TopFiltersBar
+          filters={appliedFilters || INITIAL_FILTERS}
+          onOpenFilter={handleOpenFilterDialog}
+          onRefresh={() => fetchData(appliedFilters)}
+        />
+        <Box
+          minHeight="60vh"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Typography variant="h5" color="textSecondary">
+            No data available
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
 
-          {/* Filters Section */}
-          <Paper
-            sx={{
-              p: 3,
-              mb: 4,
-              bgcolor: "background.paper",
-              borderRadius: 4,
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
-            }}
-          >
-            <Box display="flex" alignItems="center" mb={2}>
-              <FilterList sx={{ mr: 1, color: "primary.main" }} />
-              <Typography variant="h6" color="text.primary">
-                Filters
-              </Typography>
-            </Box>
+  const {
+    summary,
+    campaigns,
+    performanceByType,
+    monthlyPerformance,
+    statusDistribution,
+  } = dashboardData.data;
 
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={3}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="Start Date"
-                    value={filters.startDate}
-                    onChange={(newValue) =>
-                      handleFilterChange("startDate", newValue)
-                    }
-                    renderInput={(params) => (
-                      <TextField {...params} fullWidth />
-                    )}
-                  />
-                </LocalizationProvider>
-              </Grid>
+  const statusData = (statusDistribution || []).map((item) => ({
+    name: item.status.charAt(0).toUpperCase() + item.status.slice(1),
+    value: item.count,
+    color: getStatusColor(item.status),
+  }));
 
-              <Grid item xs={12} md={3}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="End Date"
-                    value={filters.endDate}
-                    onChange={(newValue) =>
-                      handleFilterChange("endDate", newValue)
-                    }
-                    renderInput={(params) => (
-                      <TextField {...params} fullWidth />
-                    )}
-                  />
-                </LocalizationProvider>
-              </Grid>
+  const activeFilters = getActiveFilters();
 
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    multiple
-                    value={filters.status}
-                    onChange={handleStatusChange}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {selected.map((value) => (
-                          <Chip
-                            key={value}
-                            label={
-                              value.charAt(0).toUpperCase() + value.slice(1)
-                            }
-                            size="small"
-                            sx={{
-                              backgroundColor: `${STATUS_COLORS[value]}22`,
-                              color: STATUS_COLORS[value],
-                              border: `1px solid ${STATUS_COLORS[value]}`,
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    )}
-                  >
-                    <MenuItem value="approved">Approved</MenuItem>
-                    <MenuItem value="pending">Pending</MenuItem>
-                    <MenuItem value="completed">Completed</MenuItem>
-                    <MenuItem value="paused">Paused</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+  const formatDate = (value) => {
+    if (!value) return "—";
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString();
+  };
 
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
-                  <InputLabel>Campaign Type</InputLabel>
-                  <Select
-                    value={filters.type}
-                    onChange={(e) => handleFilterChange("type", e.target.value)}
-                    label="Campaign Type"
-                  >
-                    <MenuItem value="">All Types</MenuItem>
-                    <MenuItem value="cpi">CPI</MenuItem>
-                    <MenuItem value="cpc">CPC</MenuItem>
-                    <MenuItem value="cpa">CPA</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+  // Add short date formatter
+const formatShortDate = (value) => {
+  if (!value) return "—";
+  const d = new Date(value);
+  return Number.isNaN(d.getTime())
+    ? String(value)
+    : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+};
 
-              <Grid item xs={12} md={3}>
-                <TextField
-                  label="Min Budget"
-                  type="number"
-                  value={filters.minBudget}
-                  onChange={(e) =>
-                    handleFilterChange("minBudget", e.target.value)
-                  }
-                  fullWidth
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">₹</InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+  return (
+    <Box
+      minHeight="100vh"
+      display="flex"
+      flexDirection="column"
+      bgcolor="#f8fafd"
+    >
+      {/* Global Top Filters Bar */}
+      <TopFiltersBar
+        filters={appliedFilters || INITIAL_FILTERS}
+        onOpenFilter={handleOpenFilterDialog}
+        onRefresh={() => fetchData(appliedFilters)}
+        activeChips={activeFilters}
+      />
 
-              <Grid item xs={12} md={3}>
-                <TextField
-                  label="Max Budget"
-                  type="number"
-                  value={filters.maxBudget}
-                  onChange={(e) =>
-                    handleFilterChange("maxBudget", e.target.value)
-                  }
-                  fullWidth
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">₹</InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+      {/* Filter Dialog */}
+      <FilterDialog
+        open={filterDialogOpen}
+        onClose={handleCloseFilterDialog}
+        filters={tempFilters}
+        setFilters={setTempFilters}
+        applyFilters={applyFilters}
+      />
 
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
-                  <InputLabel>Sort By</InputLabel>
-                  <Select
-                    value={filters.sortBy}
-                    onChange={(e) =>
-                      handleFilterChange("sortBy", e.target.value)
-                    }
-                    label="Sort By"
-                  >
-                    <MenuItem value="budgetUtilization">
-                      Budget Utilization
-                    </MenuItem>
-                    <MenuItem value="totalBudget">Total Budget</MenuItem>
-                    <MenuItem value="totalSpent">Total Spent</MenuItem>
-                    <MenuItem value="totalClicks">Total Clicks</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
-                  <InputLabel>Sort Order</InputLabel>
-                  <Select
-                    value={filters.sortOrder}
-                    onChange={(e) =>
-                      handleFilterChange("sortOrder", e.target.value)
-                    }
-                    label="Sort Order"
-                  >
-                    <MenuItem value="asc">Ascending</MenuItem>
-                    <MenuItem value="desc">Descending</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Box display="flex" gap={2} justifyContent="flex-end">
-                  <Button
-                    variant="outlined"
-                    onClick={resetFilters}
-                    startIcon={<DateRange />}
-                  >
-                    Reset Filters
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={fetchData}
-                    disabled={loading}
-                    startIcon={<FilterList />}
-                  >
-                    Apply Filters
-                  </Button>
-                </Box>
-              </Grid>
+      {/* Main Content */}
+      <Box sx={{ p: 3, maxWidth: 1600, margin: "0 auto", width: "100%" }}>
+        {/* Summary Grid */}
+        <Fade in>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6} md={3}>
+              <SummaryCard
+                title="Total Campaigns"
+                value={summary.totalCampaigns}
+                icon={<Campaign />}
+                color={theme.palette.primary.main}
+                trend={+2}
+              />
             </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <SummaryCard
+                title="Total Budget"
+                value={formatCurrency(summary.totalBudget)}
+                icon={<MonetizationOn />}
+                color={theme.palette.success.main}
+                trend={0}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <SummaryCard
+                title="Total Spent"
+                value={formatCurrency(summary.totalSpent)}
+                icon={<AttachMoney />}
+                color={theme.palette.warning.main}
+                trend={8.5}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <SummaryCard
+                title="Budget Utilization"
+                value={formatPercent(summary.budgetUtilization)}
+                icon={<PieChartIcon />}
+                color={theme.palette.info.main}
+                trend={-2.1}
+              />
+            </Grid>
+          </Grid>
+        </Fade>
+
+        {/* Charts Section with CSS Grid 1fr 1fr */}
+        <Box
+          sx={{
+            mt: 3,
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap: 5,
+          }}
+        >
+          {/* Monthly Performance - Wide and Not Cropped */}
+          <Paper elevation={0} sx={chartCardSX}>
+            <Header
+              title="Monthly Performance"
+              onFilter={handleOpenFilterDialog}
+              onRefresh={() => fetchData(appliedFilters)}
+            />
+            <Box sx={chartContainerSX}>
+              <ResponsiveContainer width="100%" height={360}>
+                <ComposedChart
+                  data={monthlyPerformance}
+                  margin={{ top: 16, right: 28, left: 16, bottom: 24 }}
+                >
+                  <defs>
+                    <linearGradient id="premBarA" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="0%"
+                        stopColor={theme.palette.primary.main}
+                        stopOpacity={0.9}
+                      />
+                      <stop
+                        offset="75%"
+                        stopColor={theme.palette.primary.light}
+                        stopOpacity={0.18}
+                      />
+                    </linearGradient>
+                    <linearGradient id="premBarS" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="0%"
+                        stopColor="#39BF7D"
+                        stopOpacity={0.94}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="#C3EEC6"
+                        stopOpacity={0.08}
+                      />
+                    </linearGradient>
+                    <linearGradient id="premBarC" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#ffb62a" stopOpacity={0.9} />
+                      <stop
+                        offset="100%"
+                        stopColor="#FFF5CA"
+                        stopOpacity={0.06}
+                      />
+                    </linearGradient>
+                    <filter
+                      id="shadow-premium"
+                      x="-40%"
+                      y="-20%"
+                      width="180%"
+                      height="170%"
+                    >
+                      <feDropShadow
+                        dx="0"
+                        dy="8"
+                        stdDeviation="10"
+                        floodColor="#003A7B"
+                        floodOpacity="0.07"
+                      />
+                    </filter>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke={alpha(theme.palette.divider, 0.4)}
+                  />
+                  <XAxis
+                    dataKey="month"
+                    tickFormatter={(m) =>
+                      m && m.includes?.("-") ? `M${m.split("-")[1]}` : m
+                    }
+                    style={{ fontWeight: 600, fontSize: "0.9rem" }}
+                    dy={8}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis style={{ fontWeight: 600 }} />
+                  <ChartTooltip
+                    formatter={formatNumber}
+                    labelFormatter={(label) => `Month: ${label}`}
+                    contentStyle={{
+                      borderRadius: 12,
+                      border: "none",
+                      minWidth: 58,
+                      boxShadow: theme.shadows[4],
+                      background: theme.palette.background.paper,
+                      fontWeight: 600,
+                    }}
+                  />
+                  <Legend verticalAlign="top" height={28} />
+                  <Bar
+                    dataKey="totalSpent"
+                    name="Spent"
+                    fill="url(#premBarA)"
+                    barSize={34}
+                    radius={[6, 6, 0, 0]}
+                    style={{ filter: "url(#shadow-premium)" }}
+                  />
+                  <Bar
+                    dataKey="totalInstalls"
+                    name="Installs"
+                    fill="url(#premBarS)"
+                    barSize={34}
+                    radius={[6, 6, 0, 0]}
+                    style={{ filter: "url(#shadow-premium)" }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="totalClicks"
+                    name="Clicks"
+                    stroke="#FFA726"
+                    fill="url(#premBarC)"
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: theme.palette.warning.main }}
+                    activeDot={{ r: 6 }}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </Box>
+          </Paper>
+
+          {/* Status Distribution - Wide and Not Cropped */}
+          <Paper elevation={0} sx={chartCardSX}>
+            <Header
+              title="Status Distribution"
+              onFilter={handleOpenFilterDialog}
+              onRefresh={() => fetchData(appliedFilters)}
+            />
+            <Box sx={chartContainerSX}>
+              <ResponsiveContainer width="100%" height={360}>
+                <PieChart>
+                  <defs>
+                    <filter
+                      id="pie-glow"
+                      x="0"
+                      y="0"
+                      width="200%"
+                      height="200%"
+                    >
+                      <feDropShadow
+                        dx="0"
+                        dy="0"
+                        stdDeviation="7"
+                        floodColor="#4f57ef"
+                        floodOpacity="0.13"
+                      />
+                    </filter>
+                  </defs>
+                  <Pie
+                    data={statusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={64}
+                    outerRadius={110}
+                    labelLine={false}
+                    stroke="#fff"
+                    strokeWidth={3}
+                    dataKey="value"
+                    isAnimationActive
+                    animationDuration={1100}
+                    label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
+                    style={{ filter: "url(#pie-glow)" }}
+                  >
+                    {statusData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip
+                    formatter={(v) => [`${v} campaigns`]}
+                    contentStyle={{
+                      borderRadius: 10,
+                      border: "none",
+                      fontWeight: 600,
+                      background: "#fafcff",
+                      boxShadow: theme.shadows[2],
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </Box>
           </Paper>
         </Box>
 
-        {loading ? (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            height="50vh"
-          >
-            <CircularProgress
-              size={60}
-              thickness={4}
-              sx={{ color: "#4361ee" }}
-            />
-          </Box>
-        ) : error ? (
-          <Paper sx={{ p: 3, textAlign: "center", bgcolor: "error.light" }}>
-            <Typography variant="h6" color="error.contrastText">
-              {error}
-            </Typography>
-          </Paper>
-        ) : data ? (
-          <>
-            {/* Summary Cards */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
+        {/* Lower charts with 1fr 1fr */}
+        <Box
+          sx={{
+            mt: 3,
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap: 5,
+          }}
+        >
+          {/* Campaign Performance & Metrics */}
+          <Paper elevation={0} sx={{ ...chartCardSX, minHeight: 420 }}>
+            <Box mb={1}>
+              <Typography
+                variant="h6"
+                fontWeight={800}
+                display="flex"
+                alignItems="center"
+                letterSpacing="-0.5px"
+              >
+                <BarChartIcon
+                  fontSize="inherit"
+                  sx={{ mr: 1, verticalAlign: "middle" }}
+                />
+                Campaign Performance
+              </Typography>
+            </Box>
+            <Grid container spacing={2} mb={2}>
               {[
-                {
-                  title: "Total Budget",
-                  value: `₹${data.summary.totalBudget.toLocaleString()}`,
-                  icon: (
-                    <MonetizationOn
-                      sx={{ color: "primary.main", fontSize: 32 }}
-                    />
-                  ),
-                  bgColor: "rgba(67, 97, 238, 0.1)",
-                  subtitle: (
-                    <>
-                      <Box
-                        component="span"
-                        color="success.main"
-                        fontWeight={600}
-                      >
-                        ₹{data.summary.totalSpent.toLocaleString()}
-                      </Box>{" "}
-                      spent •{" "}
-                      <Box
-                        component="span"
-                        fontWeight={600}
-                        color="text.primary"
-                      >
-                        {(data.summary.budgetUtilization * 100).toFixed(1)}%
-                      </Box>{" "}
-                      utilization
-                    </>
-                  ),
-                },
-                {
-                  title: "Campaigns",
-                  value: data.summary.totalCampaigns,
-                  icon: (
-                    <Campaign sx={{ color: "secondary.main", fontSize: 32 }} />
-                  ),
-                  bgColor: "rgba(58, 12, 163, 0.1)",
-                  subtitle: (
-                    <>
-                      <Box
-                        component="span"
-                        color="success.main"
-                        fontWeight={600}
-                      >
-                        {data.summary.activeCampaigns}
-                      </Box>{" "}
-                      active •{" "}
-                      <Box
-                        component="span"
-                        color="warning.main"
-                        fontWeight={600}
-                      >
-                        {data.summary.pendingCampaigns}
-                      </Box>{" "}
-                      pending
-                    </>
-                  ),
-                },
-                {
-                  title: "Performance",
-                  value: data.summary.totalInstalls,
-                  icon: (
-                    <TrendingUp sx={{ color: "success.main", fontSize: 32 }} />
-                  ),
-                  bgColor: "rgba(46, 204, 113, 0.1)",
-                  subtitle: (
-                    <>
-                      <Box
-                        component="span"
-                        fontWeight={600}
-                        color="text.primary"
-                      >
-                        {data.summary.totalClicks}
-                      </Box>{" "}
-                      clicks •{" "}
-                      <Box component="span" color="info.main" fontWeight={600}>
-                        {(data.summary.averageCTR * 100).toFixed(1)}%
-                      </Box>{" "}
-                      CTR
-                    </>
-                  ),
-                },
-                {
-                  title: "Engagement",
-                  value: data.summary.totalReviews,
-                  icon: (
-                    <RateReview sx={{ color: "warning.main", fontSize: 32 }} />
-                  ),
-                  bgColor: "rgba(243, 156, 18, 0.1)",
-                  subtitle: (
-                    <>
-                      <Box
-                        component="span"
-                        fontWeight={600}
-                        color="text.primary"
-                      >
-                        ₹{data.summary.averageCPC.toFixed(2)}
-                      </Box>{" "}
-                      avg. CPC •{" "}
-                      <Box
-                        component="span"
-                        color="success.main"
-                        fontWeight={600}
-                      >
-                        {data.summary.totalInstalls}
-                      </Box>{" "}
-                      installs
-                    </>
-                  ),
-                },
-              ].map((card, index) => (
-                <Grid item xs={12} md={3} key={index}>
-                  <Card>
-                    <CardContent>
-                      <Box display="flex" justifyContent="space-between">
-                        <Box>
-                          <Typography
-                            variant="body1"
-                            color="text.secondary"
-                            gutterBottom
-                          >
-                            {card.title}
-                          </Typography>
-                          <Typography
-                            variant="h4"
-                            fontWeight={700}
-                            color="text.primary"
-                          >
-                            {card.value}
-                          </Typography>
-                        </Box>
-                        <Box
-                          sx={{
-                            width: 56,
-                            height: 56,
-                            borderRadius: "50%",
-                            bgcolor: card.bgColor,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {card.icon}
-                        </Box>
-                      </Box>
-                      <Box mt={2}>
-                        <Typography variant="body2" color="text.secondary">
-                          {card.subtitle}
-                        </Typography>
-                      </Box>
-                    </CardContent>
-                  </Card>
+                { label: "Active", value: summary.activeCampaigns },
+                { label: "Completed", value: summary.completedCampaigns },
+                { label: "Paused", value: summary.pausedCampaigns },
+                { label: "Pending", value: summary.pendingCampaigns },
+              ].map((item) => (
+                <Grid item xs={6} sm={3} key={item.label}>
+                  <StatusCard
+                    status={item.label}
+                    count={item.value}
+                    color={getStatusColor(item.label)}
+                    icon={item.value >= 0 ? <ArrowUpward /> : <ArrowDownward />}
+                  />
                 </Grid>
               ))}
             </Grid>
-
-            {/* Charts Section - Fixed to be equally sized */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Divider sx={{ my: 2 }} />
+            <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <CardContent
-                    sx={{ flex: 1, display: "flex", flexDirection: "column" }}
-                  >
-                    <Typography variant="h6" gutterBottom color="text.primary">
-                      Monthly Performance
-                    </Typography>
-                    <Box
-                      sx={{ flex: 1, minHeight: "300px", minWidth: "320px" }}
-                    >
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart
-                          data={data.monthlyPerformance}
-                          margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
-                        >
-                          <defs>
-                            <linearGradient
-                              id="colorSpent"
-                              x1="0"
-                              y1="0"
-                              x2="0"
-                              y2="1"
-                            >
-                              <stop
-                                offset="5%"
-                                stopColor="#4361ee"
-                                stopOpacity={0.8}
-                              />
-                              <stop
-                                offset="95%"
-                                stopColor="#4361ee"
-                                stopOpacity={0.1}
-                              />
-                            </linearGradient>
-                            <linearGradient
-                              id="colorClicks"
-                              x1="0"
-                              y1="0"
-                              x2="0"
-                              y2="1"
-                            >
-                              <stop
-                                offset="5%"
-                                stopColor="#4cc9f0"
-                                stopOpacity={0.8}
-                              />
-                              <stop
-                                offset="95%"
-                                stopColor="#4cc9f0"
-                                stopOpacity={0.1}
-                              />
-                            </linearGradient>
-                          </defs>
-                          <XAxis dataKey="month" />
-                          <YAxis />
-                          <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                          <Tooltip
-                            contentStyle={{
-                              background: "#ffffff",
-                              border: "1px solid rgba(67, 97, 238, 0.3)",
-                              borderRadius: "8px",
-                              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                              color: "#2d3436",
-                            }}
-                          />
-                          <Legend />
-                          <Area
-                            type="monotone"
-                            dataKey="totalSpent"
-                            stroke="#4361ee"
-                            fillOpacity={1}
-                            fill="url(#colorSpent)"
-                            name="Amount Spent"
-                            strokeWidth={2}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="totalClicks"
-                            stroke="#4cc9f0"
-                            fillOpacity={1}
-                            fill="url(#colorClicks)"
-                            name="Total Clicks"
-                            strokeWidth={2}
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </CardContent>
-                </Card>
+                <MetricCard
+                  title="Total Installs"
+                  value={formatNumber(summary.totalInstalls)}
+                  icon={<ArrowUpward fontSize="small" />}
+                  trend="+12%"
+                  color={theme.palette.success.main}
+                />
               </Grid>
-
               <Grid item xs={12} md={4}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <CardContent
-                    sx={{ flex: 1, display: "flex", flexDirection: "column" }}
-                  >
-                    <Typography variant="h6" gutterBottom color="text.primary">
-                      Campaign Types
-                    </Typography>
-                    <Box
-                      sx={{ flex: 1, minHeight: "300px", minWidth: "320px" }}
-                    >
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={data.performanceByType}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="totalSpent"
-                            nameKey="type"
-                            label={({ name, percent }) =>
-                              `${name}: ${(percent * 100).toFixed(0)}%`
-                            }
-                          >
-                            {data.performanceByType.map((entry, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={COLORS[index % COLORS.length]}
-                              />
-                            ))}
-                          </Pie>
-                          <Tooltip
-                            contentStyle={{
-                              background: "#ffffff",
-                              border: "1px solid rgba(67, 97, 238, 0.3)",
-                              borderRadius: "8px",
-                              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                              color: "#2d3436",
-                            }}
-                            formatter={(value) => [
-                              `₹${value.toLocaleString()}`,
-                              "Total Spent",
-                            ]}
-                          />
-                          <Legend
-                            layout="vertical"
-                            verticalAlign="middle"
-                            align="right"
-                            wrapperStyle={{ paddingLeft: "20px" }}
-                          />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </CardContent>
-                </Card>
+                <MetricCard
+                  title="Average CTR"
+                  value={formatPercent(summary.averageCTR)}
+                  icon={<ArrowUpward fontSize="small" />}
+                  trend="+2.3%"
+                  color={theme.palette.success.main}
+                />
               </Grid>
-
               <Grid item xs={12} md={4}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <CardContent
-                    sx={{ flex: 1, display: "flex", flexDirection: "column" }}
-                  >
-                    <Typography variant="h6" gutterBottom color="text.primary">
-                      Status Distribution
-                    </Typography>
-                    <Box
-                      sx={{ flex: 1, minHeight: "300px", minWidth: "320px" }}
-                    >
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={data.statusDistribution}
-                          layout="vertical"
-                          margin={{ top: 10, right: 20, left: 70, bottom: 10 }}
-                        >
-                          <XAxis type="number" />
-                          <YAxis
-                            dataKey="status"
-                            type="category"
-                            tick={{ fontSize: 12 }}
-                            width={80}
-                          />
-                          <Tooltip
-                            contentStyle={{
-                              background: "#ffffff",
-                              border: "1px solid rgba(67, 97, 238, 0.3)",
-                              borderRadius: "8px",
-                              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                              color: "#2d3436",
-                            }}
-                            formatter={(value) => [
-                              `₹${value.toLocaleString()}`,
-                              "Total Budget",
-                            ]}
-                          />
-                          <Bar
-                            dataKey="totalBudget"
-                            name="Total Budget"
-                            barSize={20}
-                          >
-                            {data.statusDistribution.map((entry, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={
-                                  STATUS_COLORS[entry.status] ||
-                                  COLORS[index % COLORS.length]
-                                }
-                              />
-                            ))}
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </CardContent>
-                </Card>
+                <MetricCard
+                  title="Average CPC"
+                  value={formatCurrency(summary.averageCPC)}
+                  icon={<ArrowDownward fontSize="small" />}
+                  trend="-0.5%"
+                  color={theme.palette.error.main}
+                />
               </Grid>
             </Grid>
+          </Paper>
 
-            {/* Campaigns Data Grid */}
-            <Card sx={{ mb: 4 }}>
-              <CardContent>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  mb={2}
+          {/* Performance by Type */}
+          <Paper elevation={0} sx={chartCardSX}>
+            <Box mb={1}>
+              <Typography
+                variant="h6"
+                fontWeight={800}
+                display="flex"
+                alignItems="center"
+                letterSpacing="-0.5px"
+              >
+                <PieChartIcon
+                  fontSize="inherit"
+                  sx={{ mr: 1, verticalAlign: "middle" }}
+                />
+                Performance by Type
+              </Typography>
+            </Box>
+            <Box sx={chartContainerSX}>
+              <ResponsiveContainer width="100%" height={320}>
+                <ComposedChart
+                  data={performanceByType}
+                  margin={{ top: 10, right: 24, left: 16, bottom: 20 }}
                 >
-                  <Typography variant="h6" gutterBottom color="text.primary">
-                    Campaigns Overview
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data.campaigns.length} campaigns found
-                  </Typography>
-                </Box>
-
-                <Box sx={{ height: 400, width: "100%" }}>
-                  <DataGrid
-                    rows={data.campaigns}
-                    columns={campaignColumns}
-                    pageSize={5}
-                    rowsPerPageOptions={[5, 10, 25]}
-                    getRowId={(row) => row._id}
-                    disableSelectionOnClick
+                  <defs>
+                    <linearGradient id="pbtBudget" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor={theme.palette.primary.main}
+                        stopOpacity={0.7}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor={theme.palette.primary.main}
+                        stopOpacity={0.16}
+                      />
+                    </linearGradient>
+                    <linearGradient id="pbtSpent" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor={theme.palette.success.light}
+                        stopOpacity={0.75}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor={theme.palette.success.light}
+                        stopOpacity={0.1}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke={alpha(theme.palette.divider, 0.4)}
                   />
+                  <XAxis dataKey="type" style={{ fontWeight: 700 }} />
+                  <YAxis style={{ fontWeight: 700 }} />
+                  <ChartTooltip
+                    formatter={formatNumber}
+                    contentStyle={{
+                      borderRadius: 8,
+                      border: "none",
+                      boxShadow: theme.shadows[4],
+                      background: theme.palette.background.paper,
+                    }}
+                  />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="totalBudget"
+                    name="Total Budget"
+                    stroke={theme.palette.primary.main}
+                    fill="url(#pbtBudget)"
+                    strokeWidth={3}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="totalSpent"
+                    name="Total Spent"
+                    stroke={theme.palette.success.main}
+                    fill="url(#pbtSpent)"
+                    strokeWidth={3}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </Box>
+          </Paper>
+        </Box>
+
+        {/* Table: Campaigns (Full Width) */}
+        <Grow in timeout={800}>
+          <Box mt={4}>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={2}
+            >
+              <Typography
+                variant="h6"
+                fontWeight={900}
+                display="flex"
+                alignItems="center"
+              >
+                Campaign Details
+              </Typography>
+              <Box display="flex" gap={1}>
+                <Tooltip title="Refresh">
+                  <IconButton onClick={() => fetchData(appliedFilters)}>
+                    <Refresh />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Filter">
+                  <IconButton onClick={handleOpenFilterDialog}>
+                    <FilterList />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Box>
+
+            {/* Premium Table Container */}
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: 4,
+                overflow: "hidden",
+                background:
+                  "linear-gradient(to bottom right, #ffffff, #f9faff)",
+                border: "1px solid rgba(224, 230, 255, 0.7)",
+                boxShadow:
+                  "0 12px 40px -10px rgba(101, 116, 255, 0.08), 0 1.5px 10px -3px rgba(0,0,0,0.03)",
+              }}
+            >
+              <TableContainer sx={{ maxHeight: 600 }}>
+                <Table size="small" stickyHeader>
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: "#f5f8ff" }}>
+                      <TableCell
+                        sx={{ fontWeight: 800, color: "text.secondary", py: 2 }}
+                      >
+                        App
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontWeight: 800, color: "text.secondary", py: 2 }}
+                      >
+                        Name
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ fontWeight: 800, color: "text.secondary", py: 2 }}
+                      >
+                        Type
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ fontWeight: 800, color: "text.secondary", py: 2 }}
+                      >
+                        Status
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ fontWeight: 800, color: "text.secondary", py: 2 }}
+                      >
+                        Budget
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ fontWeight: 800, color: "text.secondary", py: 2 }}
+                      >
+                        Performance
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ fontWeight: 800, color: "text.secondary", py: 2 }}
+                      >
+                        Metrics
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ fontWeight: 800, color: "text.secondary", py: 2 }}
+                      >
+                        Timeline
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {(campaigns || []).map((campaign) => {
+                      const util =
+                        campaign?.budgetUtilization ??
+                        (campaign?.budgetTotal
+                          ? (campaign?.budgetSpent || 0) / campaign.budgetTotal
+                          : 0);
+
+                      return (
+                        <TableRow
+                          key={campaign._id || Math.random()}
+                          hover
+                          sx={{
+                            "&:last-child td": { border: 0 },
+                            transition: "background-color 0.2s",
+                            "&:hover": { bgcolor: "#f9faff" },
+                          }}
+                        >
+                          {/* App Logo */}
+                          <TableCell sx={{ py: 2 }}>
+                            <Box display="flex" alignItems="center">
+                              <Avatar
+                                src={campaign?.appLogo?.url || ""}
+                                sx={{
+                                  bgcolor: getStatusColor(campaign?.status),
+                                  width: 42,
+                                  height: 42,
+                                  fontWeight: 700,
+                                  mr: 2,
+                                  fontSize: 20,
+                                  boxShadow:
+                                    "0 3px 10px rgba(101, 116, 255, 0.15)",
+                                }}
+                              >
+                                {campaign?.name?.charAt?.(0)?.toUpperCase?.() ||
+                                  "A"}
+                              </Avatar>
+                            </Box>
+                          </TableCell>
+
+                          {/* Campaign Name */}
+                          <TableCell sx={{ py: 2 }}>
+                            <Typography fontWeight={700} sx={{ mb: 0.5 }}>
+                              {campaign?.name || "—"}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {campaign?.packageName?.split?.("/")?.pop?.() ||
+                                "—"}
+                            </Typography>
+                          </TableCell>
+
+                          {/* Campaign Type */}
+                          <TableCell align="center" sx={{ py: 2 }}>
+                            <Chip
+                              label={(campaign?.type || "—")
+                                .toString()
+                                .toUpperCase()}
+                              size="small"
+                              sx={{
+                                bgcolor:
+                                  theme.palette.type === "light"
+                                    ? alpha(theme.palette.primary.light, 0.2)
+                                    : alpha(theme.palette.primary.dark, 0.3),
+                                color: theme.palette.primary.dark,
+                                fontWeight: 700,
+                                px: 1,
+                                borderRadius: 1,
+                              }}
+                            />
+                          </TableCell>
+
+                          {/* Status */}
+                          <TableCell align="center" sx={{ py: 2 }}>
+                            <Chip
+                              label={campaign?.status || "—"}
+                              size="small"
+                              sx={{
+                                bgcolor: alpha(
+                                  getStatusColor(campaign?.status),
+                                  0.15
+                                ),
+                                color: getStatusColor(campaign?.status),
+                                fontWeight: 700,
+                                px: 1,
+                                borderRadius: 1,
+                                textTransform: "capitalize",
+                              }}
+                            />
+                          </TableCell>
+
+                          {/* Budget */}
+                          <TableCell align="center" sx={{ py: 2 }}>
+                            <Stack spacing={1} alignItems="center">
+                              <Box textAlign="center">
+                                <Typography variant="body2" fontWeight={600}>
+                                  {formatCurrency(campaign?.budgetTotal || 0)}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                >
+                                  Total
+                                </Typography>
+                              </Box>
+
+                              <Box textAlign="center">
+                                <Typography variant="body2" fontWeight={600}>
+                                  {formatCurrency(campaign?.budgetSpent || 0)}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                >
+                                  Spent
+                                </Typography>
+                              </Box>
+
+                              <Box width="100%" maxWidth={120} mt={1}>
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={(util || 0) * 100}
+                                  sx={{
+                                    height: 8,
+                                    borderRadius: 4,
+                                    bgcolor: theme.palette.grey[200],
+                                    "& .MuiLinearProgress-bar": {
+                                      borderRadius: 4,
+                                      bgcolor:
+                                        util > 0.7
+                                          ? theme.palette.error.main
+                                          : util > 0.4
+                                          ? theme.palette.warning.main
+                                          : theme.palette.success.main,
+                                    },
+                                  }}
+                                />
+                                <Typography variant="caption" fontWeight={600}>
+                                  {formatPercent(util || 0)}
+                                </Typography>
+                              </Box>
+                            </Stack>
+                          </TableCell>
+
+                          {/* Performance */}
+                          <TableCell align="center" sx={{ py: 2 }}>
+                            <Grid container spacing={1}>
+                              <Grid item xs={4}>
+                                <Box textAlign="center">
+                                  <Typography variant="body2" fontWeight={700}>
+                                    {formatNumber(campaign?.installsCount || 0)}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                  >
+                                    Installs
+                                  </Typography>
+                                </Box>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Box textAlign="center">
+                                  <Typography variant="body2" fontWeight={700}>
+                                    {formatNumber(campaign?.reviewCount || 0)}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                  >
+                                    Reviews
+                                  </Typography>
+                                </Box>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Box textAlign="center">
+                                  <Typography variant="body2" fontWeight={700}>
+                                    {formatNumber(campaign?.clickCount || 0)}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                  >
+                                    Clicks
+                                  </Typography>
+                                </Box>
+                              </Grid>
+                            </Grid>
+                          </TableCell>
+
+                          {/* Metrics */}
+                          <TableCell align="center" sx={{ py: 2 }}>
+                            <Stack spacing={1} alignItems="center">
+                              <Box>
+                                <Typography variant="body2" fontWeight={700}>
+                                  {formatPercent(campaign?.ctr || 0)}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                >
+                                  CTR
+                                </Typography>
+                              </Box>
+                              <Box>
+                                <Typography variant="body2" fontWeight={700}>
+                                  {campaign?.cpc !== undefined &&
+                                  campaign?.cpc !== null
+                                    ? formatCurrency(campaign.cpc)
+                                    : "—"}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                >
+                                  CPC
+                                </Typography>
+                              </Box>
+                            </Stack>
+                          </TableCell>
+
+                          {/* Timeline */}
+                          <TableCell align="center" sx={{ py: 2 }}>
+                            <Stack spacing={0.5} alignItems="center">
+                              <Tooltip
+                                title={`Created: ${formatDate(
+                                  campaign?.createdAt
+                                )}`}
+                              >
+                                <Box>
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                  >
+                                    Created
+                                  </Typography>
+                                  <Typography variant="body2" fontWeight={600}>
+                                    {formatShortDate(campaign?.createdAt)}
+                                  </Typography>
+                                </Box>
+                              </Tooltip>
+
+                              <Box display="flex" alignItems="center">
+                                <Typography variant="body2" fontWeight={600}>
+                                  {formatShortDate(campaign?.startDate)}
+                                </Typography>
+                                <ArrowForward
+                                  fontSize="small"
+                                  sx={{ mx: 0.5, color: "text.secondary" }}
+                                />
+                                <Typography variant="body2" fontWeight={600}>
+                                  {formatShortDate(campaign?.endDate)}
+                                </Typography>
+                              </Box>
+                            </Stack>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              {/* Empty State */}
+              {(!campaigns || campaigns.length === 0) && (
+                <Box py={6} textAlign="center">
+                  <Campaign
+                    sx={{ fontSize: 64, color: "text.disabled", mb: 1 }}
+                  />
+                  <Typography variant="h6" color="text.secondary">
+                    No campaigns found
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" mt={1}>
+                    Try adjusting your filters or create a new campaign
+                  </Typography>
                 </Box>
-              </CardContent>
-            </Card>
-          </>
-        ) : null}
+              )}
+            </Paper>
+          </Box>
+        </Grow>
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 };
 
