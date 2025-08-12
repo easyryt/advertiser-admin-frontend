@@ -35,16 +35,16 @@ import Divider from "@mui/material/Divider";
 import CircularProgress from "@mui/material/CircularProgress";
 import Fade from "@mui/material/Fade";
 
-// Premium styled components with light blue theme
+// Premium styled components with sophisticated color scheme
 const PremiumPaper = styled(Paper)(({ theme }) => ({
-  borderRadius: "12px",
-  boxShadow: "0 8px 32px rgba(0, 87, 178, 0.1)",
+  borderRadius: "16px",
+  boxShadow: "0 12px 40px rgba(0, 0, 0, 0.08)",
   overflow: "hidden",
-  border: "1px solid rgba(208, 222, 255, 0.7)",
-  background: "linear-gradient(145deg, #ffffff, #f8fbff)",
+  border: "1px solid rgba(224, 224, 224, 0.3)",
+  background: "#FFFFFF",
   transition: "all 0.3s ease",
   "&:hover": {
-    boxShadow: "0 12px 40px rgba(0, 87, 178, 0.15)",
+    boxShadow: "0 16px 48px rgba(0, 0, 0, 0.12)",
   },
 }));
 
@@ -55,12 +55,12 @@ const StatusChip = styled(Chip)(({ theme, status }) => ({
   borderRadius: "6px",
   backgroundColor:
     status === "approved"
-      ? "rgba(76, 175, 80, 0.12)"
+      ? "rgba(76, 175, 80, 0.1)"
       : status === "pending"
-      ? "rgba(255, 152, 0, 0.12)"
+      ? "rgba(255, 152, 0, 0.1)"
       : status === "paused"
-      ? "rgba(156, 39, 176, 0.12)"
-      : "rgba(33, 150, 243, 0.12)",
+      ? "rgba(156, 39, 176, 0.1)"
+      : "rgba(33, 150, 243, 0.1)",
   color:
     status === "approved"
       ? "#2e7d32"
@@ -75,15 +75,14 @@ const StatusChip = styled(Chip)(({ theme, status }) => ({
 }));
 
 const HeaderBar = styled("div")({
-  background: "linear-gradient(135deg, #e6f0ff 0%, #c2dcff 100%)",
-  color: "#0d47a1",
-  padding: "18px 32px",
+  background: "#FFFFFF",
+  color: "#2D3748",
+  padding: "22px 32px",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  borderTopLeftRadius: "12px",
-  borderTopRightRadius: "12px",
-  boxShadow: "0 2px 10px rgba(25, 118, 210, 0.1)",
+  borderBottom: "1px solid rgba(224, 224, 224, 0.5)",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.03)",
 });
 
 // Custom Toolbar with premium styling
@@ -92,24 +91,24 @@ function CustomToolbar({ onRefresh }) {
     <GridToolbarContainer
       sx={{
         justifyContent: "space-between",
-        p: 1.5,
-        bgcolor: "#f5f9ff",
-        borderBottom: "1px solid rgba(208, 222, 255, 0.5)",
+        p: 2,
+        bgcolor: "#F9FAFC",
+        borderBottom: "1px solid rgba(224, 224, 224, 0.3)",
       }}
     >
       <Button
         onClick={onRefresh}
-        startIcon={<RefreshIcon sx={{ color: "#1976d2" }} />}
+        startIcon={<RefreshIcon sx={{ color: "#4A5568" }} />}
         variant="text"
         size="small"
         sx={{
-          color: "#1565c0",
+          color: "#4A5568",
           fontWeight: 600,
           borderRadius: "8px",
-          px: 2,
+          px: 2.5,
           py: 1,
           "&:hover": {
-            backgroundColor: "rgba(25, 118, 210, 0.08)",
+            backgroundColor: "rgba(74, 85, 104, 0.05)",
           },
         }}
       >
@@ -118,26 +117,26 @@ function CustomToolbar({ onRefresh }) {
       <Box display="flex" gap={1}>
         <GridToolbarColumnsButton
           sx={{
-            color: "#1976d2",
-            "&:hover": { backgroundColor: "rgba(25, 118, 210, 0.08)" },
+            color: "#4A5568",
+            "&:hover": { backgroundColor: "rgba(74, 85, 104, 0.05)" },
           }}
         />
         <GridToolbarFilterButton
           sx={{
-            color: "#1976d2",
-            "&:hover": { backgroundColor: "rgba(25, 118, 210, 0.08)" },
+            color: "#4A5568",
+            "&:hover": { backgroundColor: "rgba(74, 85, 104, 0.05)" },
           }}
         />
         <GridToolbarDensitySelector
           sx={{
-            color: "#1976d2",
-            "&:hover": { backgroundColor: "rgba(25, 118, 210, 0.08)" },
+            color: "#4A5568",
+            "&:hover": { backgroundColor: "rgba(74, 85, 104, 0.05)" },
           }}
         />
         <GridToolbarExport
           sx={{
-            color: "#1976d2",
-            "&:hover": { backgroundColor: "rgba(25, 118, 210, 0.08)" },
+            color: "#4A5568",
+            "&:hover": { backgroundColor: "rgba(74, 85, 104, 0.05)" },
           }}
           printOptions={{ disableToolbarButton: true }}
           csvOptions={{
@@ -272,19 +271,19 @@ const CampaignList = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <Avatar
             sx={{
-              bgcolor: "#e3f2fd",
-              color: "#1565c0",
+              bgcolor: "#F5F7FF",
+              color: "#4A5568",
               fontWeight: 600,
-              width: 40,
-              height: 40,
+              width: 42,
+              height: 42,
               fontSize: "1rem",
-              boxShadow: "0 2px 6px rgba(25, 118, 210, 0.2)",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
             }}
           >
             {params.row.name?.charAt(0) || "C"}
           </Avatar>
           <Tooltip title={params.row.name || "N/A"} placement="top">
-            <Typography variant="body1" fontWeight="600" noWrap>
+            <Typography variant="body1" fontWeight="600" noWrap color="#2D3748">
               {params.row.name || "N/A"}
             </Typography>
           </Tooltip>
@@ -298,10 +297,10 @@ const CampaignList = () => {
       flex: 1,
       renderCell: (params) => (
         <Box>
-          <Typography variant="subtitle2" fontWeight="600" color="#0d47a1">
+          <Typography variant="subtitle2" fontWeight="600" color="#2D3748">
             {params.row.advertiser?.name || "Unknown"}
           </Typography>
-          <Typography variant="caption" color="#546e7a">
+          <Typography variant="caption" color="#718096">
             {params.row.advertiser?.phone || "No phone"}
           </Typography>
         </Box>
@@ -337,9 +336,9 @@ const CampaignList = () => {
               PaperProps: {
                 sx: {
                   borderRadius: "8px",
-                  boxShadow: "0 8px 24px rgba(33, 150, 243, 0.15)",
+                  boxShadow: "0 12px 24px rgba(0, 0, 0, 0.1)",
                   marginTop: "4px",
-                  border: "1px solid rgba(208, 222, 255, 0.7)",
+                  border: "1px solid rgba(224, 224, 224, 0.3)",
                 },
               },
             }}
@@ -347,7 +346,7 @@ const CampaignList = () => {
             {["pending", "approved", "paused", "completed"].map((status) => (
               <MenuItem key={status} value={status} sx={{ py: 1 }}>
                 {updatingStatus[campaignId] && status === currentStatus ? (
-                  <CircularProgress size={20} sx={{ mr: 1.5, color: "#1976d2" }} />
+                  <CircularProgress size={20} sx={{ mr: 1.5, color: "#4A5568" }} />
                 ) : (
                   <StatusChip
                     label={status.charAt(0).toUpperCase() + status.slice(1)}
@@ -373,12 +372,12 @@ const CampaignList = () => {
           label={params.row.type?.toUpperCase() || "N/A"}
           sx={{
             fontWeight: 600,
-            bgcolor: "#e3f2fd",
-            color: "#1976d2",
+            bgcolor: "#F5F7FF",
+            color: "#4A5568",
             px: 1.5,
             py: 0.5,
             borderRadius: "6px",
-            boxShadow: "0 2px 4px rgba(25, 118, 210, 0.1)",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.03)",
           }}
         />
       ),
@@ -403,10 +402,10 @@ const CampaignList = () => {
       flex: 1,
       renderCell: (params) => (
         <Box>
-          <Typography variant="caption" display="block" color="#546e7a">
+          <Typography variant="caption" display="block" color="#718096">
             <strong>Start:</strong> {formatDate(params.row.startDate)}
           </Typography>
-          <Typography variant="caption" display="block" color="#546e7a">
+          <Typography variant="caption" display="block" color="#718096">
             <strong>End:</strong> {formatDate(params.row.endDate)}
           </Typography>
         </Box>
@@ -430,7 +429,7 @@ const CampaignList = () => {
               sx={{
                 textTransform: "none",
                 textDecoration: "none",
-                color: "#1565c0",
+                color: "#4A5568",
                 fontWeight: 500,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -440,7 +439,7 @@ const CampaignList = () => {
                 borderRadius: "6px",
                 px: 1.5,
                 "&:hover": {
-                  backgroundColor: "rgba(33, 150, 243, 0.08)",
+                  backgroundColor: "rgba(74, 85, 104, 0.05)",
                 },
               }}
             >
@@ -448,7 +447,7 @@ const CampaignList = () => {
             </Button>
           </Tooltip>
         ) : (
-          <Typography variant="body2" color="#b0bec5">
+          <Typography variant="body2" color="#CBD5E0">
             No link provided
           </Typography>
         );
@@ -473,7 +472,7 @@ const CampaignList = () => {
           <Box>
             <Typography
               variant="h6"
-              color="#d32f2f"
+              color="#E53E3E"
               gutterBottom
               sx={{ fontWeight: 700 }}
             >
@@ -481,7 +480,7 @@ const CampaignList = () => {
             </Typography>
             <Typography
               variant="body1"
-              color="#546e7a"
+              color="#718096"
               sx={{ mb: 3, maxWidth: 500 }}
             >
               {error}
@@ -496,10 +495,12 @@ const CampaignList = () => {
                 px: 4,
                 py: 1,
                 fontWeight: 600,
-                background: "linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)",
-                boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
+                backgroundColor: "#4A5568",
+                color: "white",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
                 "&:hover": {
-                  boxShadow: "0 6px 16px rgba(25, 118, 210, 0.4)",
+                  backgroundColor: "#2D3748",
+                  boxShadow: "0 6px 16px rgba(0, 0, 0, 0.15)",
                 },
               }}
             >
@@ -512,9 +513,9 @@ const CampaignList = () => {
   }
 
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column", bgcolor: "#F7FAFC" }}>
       <HeaderBar>
-        <Typography variant="h6" fontWeight="700">
+        <Typography variant="h5" fontWeight="700" color="#2D3748">
           Campaign Management Dashboard
         </Typography>
         <Box>
@@ -524,14 +525,15 @@ const CampaignList = () => {
             color="inherit"
             startIcon={<RefreshIcon />}
             sx={{
-              borderColor: "rgba(25, 118, 210, 0.3)",
-              color: "#0d47a1",
+              borderColor: "rgba(74, 85, 104, 0.3)",
+              color: "#4A5568",
               fontWeight: 600,
               borderRadius: "8px",
               px: 3,
+              py: 1,
               "&:hover": {
-                borderColor: "rgba(25, 118, 210, 0.5)",
-                backgroundColor: "rgba(25, 118, 210, 0.08)",
+                borderColor: "rgba(74, 85, 104, 0.5)",
+                backgroundColor: "rgba(74, 85, 104, 0.05)",
               },
             }}
           >
@@ -540,87 +542,89 @@ const CampaignList = () => {
         </Box>
       </HeaderBar>
 
-      <PremiumPaper sx={{ flex: 1, mt: 2 }}>
-        <DataGrid
-          rows={campaigns}
-          columns={columns}
-          getRowId={(row) => row._id || Math.random().toString(36)}
-          rowCount={totalRows}
-          pagination
-          paginationMode="server"
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          pageSizeOptions={[5, 10, 25]}
-          onRowClick={handleRowClick}
-          loading={loading}
-          slots={{
-            toolbar: () => <CustomToolbar onRefresh={fetchCampaigns} />,
-            loadingOverlay: LinearProgress,
-            noRowsOverlay: () => (
-              <Box
-                sx={{
-                  display: "flex",
-                  height: "100%",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  gap: 1,
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  color="#78909c"
-                  fontWeight="500"
+      <Box sx={{ p: 3, flex: 1 }}>
+        <PremiumPaper sx={{ height: "100%" }}>
+          <DataGrid
+            rows={campaigns}
+            columns={columns}
+            getRowId={(row) => row._id || Math.random().toString(36)}
+            rowCount={totalRows}
+            pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            pageSizeOptions={[5, 10, 25]}
+            onRowClick={handleRowClick}
+            loading={loading}
+            slots={{
+              toolbar: () => <CustomToolbar onRefresh={fetchCampaigns} />,
+              loadingOverlay: LinearProgress,
+              noRowsOverlay: () => (
+                <Box
+                  sx={{
+                    display: "flex",
+                    height: "100%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    gap: 1,
+                  }}
                 >
-                  No campaigns found
-                </Typography>
-                <Typography variant="body2" color="#b0bec5">
-                  Create a new campaign or adjust your filters
-                </Typography>
-              </Box>
-            ),
-          }}
-          sx={{
-            "& .MuiDataGrid-root": {
-              border: "none",
-              fontSize: "0.875rem",
-              fontFamily: "inherit",
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#edf4ff",
-              fontWeight: "700",
-              color: "#0d47a1",
-              fontSize: "0.9rem",
-              borderBottom: "1px solid rgba(208, 222, 255, 0.7)",
-            },
-            "& .MuiDataGrid-cell": {
-              borderBottom: "1px solid rgba(208, 222, 255, 0.5)",
-              cursor: "pointer",
-            },
-            "& .MuiDataGrid-row": {
-              "&:hover": {
-                backgroundColor: "rgba(179, 208, 255, 0.1) !important",
+                  <Typography
+                    variant="body1"
+                    color="#A0AEC0"
+                    fontWeight="500"
+                  >
+                    No campaigns found
+                  </Typography>
+                  <Typography variant="body2" color="#CBD5E0">
+                    Create a new campaign or adjust your filters
+                  </Typography>
+                </Box>
+              ),
+            }}
+            sx={{
+              "& .MuiDataGrid-root": {
+                border: "none",
+                fontSize: "0.875rem",
+                fontFamily: "inherit",
               },
-              "&:nth-of-type(even)": {
-                backgroundColor: "#f8fbff",
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: "#F9FAFC",
+                fontWeight: "700",
+                color: "#2D3748",
+                fontSize: "0.9rem",
+                borderBottom: "1px solid rgba(224, 224, 224, 0.3)",
+              },
+              "& .MuiDataGrid-cell": {
+                borderBottom: "1px solid rgba(224, 224, 224, 0.2)",
+                cursor: "pointer",
+              },
+              "& .MuiDataGrid-row": {
                 "&:hover": {
-                  backgroundColor: "rgba(179, 208, 255, 0.15) !important",
+                  backgroundColor: "rgba(249, 250, 252, 0.8) !important",
+                },
+                "&:nth-of-type(even)": {
+                  backgroundColor: "#FFFFFF",
+                  "&:hover": {
+                    backgroundColor: "rgba(249, 250, 252, 0.8) !important",
+                  },
                 },
               },
-            },
-            "& .MuiDataGrid-virtualScroller": {
-              backgroundColor: "white",
-            },
-            "& .MuiDataGrid-footerContainer": {
-              backgroundColor: "#edf4ff",
-              borderTop: "1px solid rgba(208, 222, 255, 0.7)",
-            },
-            "& .MuiDataGrid-toolbarContainer": {
-              borderBottom: "1px solid rgba(208, 222, 255, 0.7)",
-            },
-          }}
-        />
-      </PremiumPaper>
+              "& .MuiDataGrid-virtualScroller": {
+                backgroundColor: "#FFFFFF",
+              },
+              "& .MuiDataGrid-footerContainer": {
+                backgroundColor: "#F9FAFC",
+                borderTop: "1px solid rgba(224, 224, 224, 0.3)",
+              },
+              "& .MuiDataGrid-toolbarContainer": {
+                borderBottom: "1px solid rgba(224, 224, 224, 0.3)",
+              },
+            }}
+          />
+        </PremiumPaper>
+      </Box>
 
       {/* Campaign Detail Dialog */}
       <Dialog
@@ -630,9 +634,9 @@ const CampaignList = () => {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: "12px",
-            background: "linear-gradient(145deg, #ffffff, #f8fbff)",
-            boxShadow: "0 12px 40px rgba(0, 87, 178, 0.2)",
+            borderRadius: "16px",
+            background: "#FFFFFF",
+            boxShadow: "0 24px 60px rgba(0, 0, 0, 0.15)",
             overflow: "hidden",
           },
         }}
@@ -642,53 +646,53 @@ const CampaignList = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            bgcolor: "#edf4ff",
-            borderBottom: "1px solid rgba(208, 222, 255, 0.7)",
-            py: 2,
+            bgcolor: "#F9FAFC",
+            borderBottom: "1px solid rgba(224, 224, 224, 0.3)",
+            py: 2.5,
             px: 3,
           }}
         >
-          <Typography variant="h6" fontWeight={700} color="#0d47a1">
+          <Typography variant="h6" fontWeight={700} color="#2D3748">
             Campaign Details
           </Typography>
           <IconButton 
             onClick={handleCloseDetailDialog}
             sx={{
-              color: "#1976d2",
+              color: "#4A5568",
               "&:hover": {
-                backgroundColor: "rgba(25, 118, 210, 0.1)",
+                backgroundColor: "rgba(74, 85, 104, 0.05)",
               },
             }}
           >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-         <br/>
-        <DialogContent sx={{ py: 3, px: 3 }}>
+         
+        <DialogContent sx={{ py: 3, px: 3 ,marginTop:"30px" }}>
           {selectedCampaign && (
             <Box>
-              <Stack direction="row" alignItems="center" spacing={2} mb={3}>
+              <Stack direction="row" alignItems="center" spacing={2.5} mb={3}>
                 <Avatar
                   sx={{
-                    bgcolor: "#e3f2fd",
-                    color: "#1565c0",
-                    width: 60,
-                    height: 60,
+                    bgcolor: "#F5F7FF",
+                    color: "#4A5568",
+                    width: 64,
+                    height: 64,
                     fontSize: "1.75rem",
                     fontWeight: 700,
-                    boxShadow: "0 4px 8px rgba(25, 118, 210, 0.2)",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.05)",
                   }}
                 >
                   {selectedCampaign.name?.charAt(0) || "C"}
                 </Avatar>
                 <Box>
-                  <Typography variant="h5" fontWeight={700} color="#0d47a1">
+                  <Typography variant="h5" fontWeight={700} color="#2D3748">
                     {selectedCampaign.name}
                   </Typography>
                 </Box>
               </Stack>
 
-              <Divider sx={{ my: 2, borderColor: "rgba(208, 222, 255, 0.7)" }} />
+              <Divider sx={{ my: 3, borderColor: "rgba(224, 224, 224, 0.3)" }} />
 
               <Box
                 display="grid"
@@ -699,30 +703,26 @@ const CampaignList = () => {
                   <Typography
                     variant="subtitle2"
                     fontWeight={700}
-                    color="#546e7a"
-                    mb={1}
-                    sx={{ letterSpacing: "0.5px" }}
+                    color="#718096"
+                    mb={1.5}
+                    sx={{ letterSpacing: "0.5px", textTransform: "uppercase" }}
                   >
-                    ADVERTISER INFORMATION
+                    Advertiser Information
                   </Typography>
-                  <Box sx={{ pl: 1 }}>
-                    <Typography variant="body1" mb={1.5}>
-                      <strong style={{ color: "#0d47a1" }}>Name:</strong>{" "}
-                      <span style={{ color: "#37474f" }}>
-                        {selectedCampaign.advertiser?.name || "N/A"}
-                      </span>
+                  <Box sx={{ pl: 0.5 }}>
+                    <Typography variant="body1" mb={1.5} color="#4A5568">
+                      <Box component="span" fontWeight={600} color="#2D3748">Name:</Box>{" "}
+                      {selectedCampaign.advertiser?.name || "N/A"}
                     </Typography>
-                    <Typography variant="body1" mb={1.5}>
-                      <strong style={{ color: "#0d47a1" }}>Phone:</strong>{" "}
-                      <span style={{ color: "#37474f" }}>
-                        {selectedCampaign.advertiser?.phone || "N/A"}
-                      </span>
+                    <Typography variant="body1" mb={1.5} color="#4A5568">
+                      <Box component="span" fontWeight={600} color="#2D3748">Phone:</Box>{" "}
+                      {selectedCampaign.advertiser?.phone || "N/A"}
                     </Typography>
-                    <Typography variant="body1" mb={0.5}>
-                      <strong style={{ color: "#0d47a1" }}>Wallet Balance:</strong>{" "}
-                      <span style={{ color: "#2e7d32", fontWeight: 600 }}>
+                    <Typography variant="body1" mb={0.5} color="#4A5568">
+                      <Box component="span" fontWeight={600} color="#2D3748">Wallet Balance:</Box>{" "}
+                      <Box component="span" fontWeight={600} color="#2e7d32">
                         ₹{selectedCampaign.advertiser?.wallet?.toFixed(2) || "0.00"}
-                      </span>
+                      </Box>
                     </Typography>
                   </Box>
                 </Box>
@@ -731,36 +731,36 @@ const CampaignList = () => {
                   <Typography
                     variant="subtitle2"
                     fontWeight={700}
-                    color="#546e7a"
-                    mb={1}
-                    sx={{ letterSpacing: "0.5px" }}
+                    color="#718096"
+                    mb={1.5}
+                    sx={{ letterSpacing: "0.5px", textTransform: "uppercase" }}
                   >
-                    CAMPAIGN DETAILS
+                    Campaign Details
                   </Typography>
-                  <Box sx={{ pl: 1 }}>
-                    <Typography variant="body1" mb={1.5}>
-                      <strong style={{ color: "#0d47a1" }}>Type:</strong>
+                  <Box sx={{ pl: 0.5 }}>
+                    <Typography variant="body1" mb={1.5} color="#4A5568">
+                      <Box component="span" fontWeight={600} color="#2D3748">Type:</Box>{" "}
                       <Chip
                         label={selectedCampaign.type?.toUpperCase() || "N/A"}
                         sx={{
-                          ml: 1.5,
+                          ml: 1,
                           fontWeight: 600,
-                          bgcolor: "#e3f2fd",
-                          color: "#1976d2",
+                          bgcolor: "#F5F7FF",
+                          color: "#4A5568",
                           px: 1.5,
                           py: 0.5,
                           borderRadius: "6px",
-                          boxShadow: "0 2px 4px rgba(25, 118, 210, 0.1)",
+                          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.03)",
                         }}
                       />
                     </Typography>
-                    <Typography variant="body1" mb={0.5}>
-                      <strong style={{ color: "#0d47a1" }}>Status:</strong>
+                    <Typography variant="body1" mb={0.5} color="#4A5568">
+                      <Box component="span" fontWeight={600} color="#2D3748">Status:</Box>{" "}
                       <StatusChip
                         label={selectedCampaign.status}
                         status={selectedCampaign.status}
                         size="small"
-                        sx={{ ml: 1.5 }}
+                        sx={{ ml: 1 }}
                       />
                     </Typography>
                   </Box>
@@ -770,36 +770,30 @@ const CampaignList = () => {
                   <Typography
                     variant="subtitle2"
                     fontWeight={700}
-                    color="#546e7a"
-                    mb={1}
-                    sx={{ letterSpacing: "0.5px" }}
+                    color="#718096"
+                    mb={1.5}
+                    sx={{ letterSpacing: "0.5px", textTransform: "uppercase" }}
                   >
-                    TIMELINE
+                    Timeline
                   </Typography>
-                  <Box sx={{ pl: 1 }}>
-                    <Typography variant="body1" mb={1.5}>
-                      <strong style={{ color: "#0d47a1" }}>Start Date:</strong>{" "}
-                      <span style={{ color: "#37474f" }}>
-                        {formatDate(selectedCampaign.startDate)}
-                      </span>
+                  <Box sx={{ pl: 0.5 }}>
+                    <Typography variant="body1" mb={1.5} color="#4A5568">
+                      <Box component="span" fontWeight={600} color="#2D3748">Start Date:</Box>{" "}
+                      {formatDate(selectedCampaign.startDate)}
                     </Typography>
-                    <Typography variant="body1" mb={1.5}>
-                      <strong style={{ color: "#0d47a1" }}>End Date:</strong>{" "}
-                      <span style={{ color: "#37474f" }}>
-                        {formatDate(selectedCampaign.endDate)}
-                      </span>
+                    <Typography variant="body1" mb={1.5} color="#4A5568">
+                      <Box component="span" fontWeight={600} color="#2D3748">End Date:</Box>{" "}
+                      {formatDate(selectedCampaign.endDate)}
                     </Typography>
-                    <Typography variant="body1" mb={0.5}>
-                      <strong style={{ color: "#0d47a1" }}>Duration:</strong>{" "}
-                      <span style={{ color: "#37474f" }}>
-                        {selectedCampaign.startDate && selectedCampaign.endDate
-                          ? `${Math.ceil(
-                              (new Date(selectedCampaign.endDate) -
-                                new Date(selectedCampaign.startDate)) /
-                                (1000 * 60 * 60 * 24)
-                            )} days`
-                          : "N/A"}
-                      </span>
+                    <Typography variant="body1" mb={0.5} color="#4A5568">
+                      <Box component="span" fontWeight={600} color="#2D3748">Duration:</Box>{" "}
+                      {selectedCampaign.startDate && selectedCampaign.endDate
+                        ? `${Math.ceil(
+                            (new Date(selectedCampaign.endDate) -
+                              new Date(selectedCampaign.startDate)) /
+                              (1000 * 60 * 60 * 24)
+                          )} days`
+                        : "N/A"}
                     </Typography>
                   </Box>
                 </Box>
@@ -808,15 +802,15 @@ const CampaignList = () => {
                   <Typography
                     variant="subtitle2"
                     fontWeight={700}
-                    color="#546e7a"
-                    mb={1}
-                    sx={{ letterSpacing: "0.5px" }}
+                    color="#718096"
+                    mb={1.5}
+                    sx={{ letterSpacing: "0.5px", textTransform: "uppercase" }}
                   >
-                    APP INFORMATION
+                    App Information
                   </Typography>
-                  <Box sx={{ pl: 1 }}>
-                    <Typography variant="body1" mb={1.5}>
-                      <strong style={{ color: "#0d47a1" }}>Package Name:</strong>
+                  <Box sx={{ pl: 0.5 }}>
+                    <Typography variant="body1" mb={1.5} color="#4A5568">
+                      <Box component="span" fontWeight={600} color="#2D3748">Package Name:</Box>
                     </Typography>
                     {selectedCampaign.packageName ? (
                       <Button
@@ -824,25 +818,27 @@ const CampaignList = () => {
                         href={selectedCampaign.packageName}
                         target="_blank"
                         rel="noopener noreferrer"
-                        variant="contained"
+                        variant="outlined"
                         color="primary"
                         endIcon={<LaunchIcon />}
                         sx={{
                           textTransform: "none",
                           fontWeight: 500,
                           borderRadius: "8px",
-                          background: "linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)",
-                          boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
+                          borderColor: "#CBD5E0",
+                          color: "#4A5568",
                           px: 3,
+                          py: 1,
                           "&:hover": {
-                            boxShadow: "0 6px 16px rgba(25, 118, 210, 0.4)",
+                            borderColor: "#A0AEC0",
+                            backgroundColor: "rgba(74, 85, 104, 0.03)",
                           },
                         }}
                       >
                         View on Play Store
                       </Button>
                     ) : (
-                      <Typography variant="body2" color="#b0bec5">
+                      <Typography variant="body2" color="#CBD5E0">
                         No link provided
                       </Typography>
                     )}
@@ -852,20 +848,20 @@ const CampaignList = () => {
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 2, borderTop: "1px solid rgba(208, 222, 255, 0.7)" }}>
+        <DialogActions sx={{ p: 3, borderTop: "1px solid rgba(224, 224, 224, 0.3)" }}>
           <Button
             onClick={handleCloseDetailDialog}
             variant="outlined"
             sx={{
               borderRadius: "8px",
               fontWeight: 600,
-              px: 3,
+              px: 4,
               py: 1,
-              borderColor: "#1976d2",
-              color: "#1976d2",
+              borderColor: "#CBD5E0",
+              color: "#4A5568",
               "&:hover": {
-                borderColor: "#0d47a1",
-                backgroundColor: "rgba(25, 118, 210, 0.08)",
+                borderColor: "#A0AEC0",
+                backgroundColor: "rgba(74, 85, 104, 0.05)",
               },
             }}
           >
@@ -892,7 +888,7 @@ const CampaignList = () => {
               borderRadius: "8px",
               fontWeight: 500,
               alignItems: "center",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
             }}
           >
             {snackbar.children}
