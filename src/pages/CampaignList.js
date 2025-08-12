@@ -592,6 +592,7 @@ const CampaignList = () => {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
+        <br/>
         <DialogContent sx={{ py: 3 }}>
           {selectedCampaign && (
             <Box>

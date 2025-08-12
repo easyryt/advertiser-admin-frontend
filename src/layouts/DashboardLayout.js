@@ -257,24 +257,6 @@ export default function DashboardLayout() {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem
-          sx={{ py: 1.6, mt: 0.5 }}
-          onClick={() => {
-            navigate("/profile-page");
-            handleMenuClose();
-          }}
-        >
-          <Avatar
-            sx={{
-              width: 32,
-              height: 32,
-              mr: 1.5,
-              bgcolor: "rgba(25, 118, 210, 0.1)",
-              color: PRIMARY_COLOR,
-            }}
-          />
-          My Profile
-        </MenuItem>
         <Divider sx={{ my: 0.5 }} />
         <MenuItem
           onClick={handleLogout}
